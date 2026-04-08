@@ -21,7 +21,7 @@ const colors = [
   'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300',
   'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300',
   'bg-rose-100 text-rose-700 dark:bg-rose-900/50 dark:text-rose-300',
-  'bg-sky-100 text-sky-700 dark:bg-sky-900/50 dark:text-sky-300',
+  'bg-brand-100 text-brand-700 dark:bg-brand-900/50 dark:text-brand-300',
 ];
 
 export function Avatar({ name, src, size = 'md', className }: AvatarProps) {

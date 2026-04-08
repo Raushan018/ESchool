@@ -44,7 +44,7 @@ export function AttendancePage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Average Attendance', value: `${avgPct}%`, icon: CalendarCheck, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/20' },
-          { label: 'Total Records', value: attendance.length, icon: Users, color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-900/20' },
+          { label: 'Total Records', value: attendance.length, icon: Users, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/20' },
           { label: 'Above 90%', value: above90, icon: TrendingUp, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
           { label: 'Below 75%', value: below75, icon: TrendingDown, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-900/20' },
         ].map((item, i) => (

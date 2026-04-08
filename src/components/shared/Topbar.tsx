@@ -9,7 +9,7 @@ import { timeAgo } from '../../utils/helpers';
 import { useNavigate } from 'react-router-dom';
 
 const TYPE_COLORS = {
-  info: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20',
+  info: 'text-brand-600 bg-brand-50 dark:bg-brand-900/20',
   success: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20',
   warning: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',
   error: 'text-red-500 bg-red-50 dark:bg-red-900/20',

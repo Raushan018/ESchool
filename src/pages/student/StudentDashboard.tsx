@@ -1,96 +1,23 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import { BookOpen, Trophy, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
 import teacherImg from '../../assets/Teacher.png';
 import studentImg from '../../assets/Student.jpg';
-import banner1 from '../../assets/2024 eSchool admission registration banner.png';
-import banner2 from '../../assets/eSchool Bright Future 2024 registration ad.png';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
+import { useStudentId } from '../../hooks/useStudentId';
 import { StatusBadge } from '../../components/ui/Badge';
 import { formatCurrency, formatDate } from '../../utils/helpers';
-import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from 'recharts';
-
-const BANNER_IMAGES = [banner1, banner2];
-const BANNER_INTERVAL = 4000;
-
-function BannerSlider() {
-  const [current, setCurrent] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const startTimer = () => {
-    timerRef.current = setInterval(() => {
-      setCurrent((c) => (c + 1) % BANNER_IMAGES.length);
-    }, BANNER_INTERVAL);
-  };
-
-  useEffect(() => {
-    startTimer();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
-
-  const go = (idx: number) => {
-    setCurrent((idx + BANNER_IMAGES.length) % BANNER_IMAGES.length);
-    if (timerRef.current) clearInterval(timerRef.current);
-    startTimer();
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.18 }}
-      className="relative w-full rounded-2xl overflow-hidden shadow-lg group"
-      style={{ aspectRatio: '21/3' }}
-    >
-      <AnimatePresence mode="wait">
-        <motion.img
-          key={current}
-          src={BANNER_IMAGES[current]}
-          alt={`Banner ${current + 1}`}
-          className="absolute inset-0 w-full h-full object-cover"
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -60 }}
-          transition={{ duration: 0.45, ease: 'easeInOut' }}
-        />
-      </AnimatePresence>
-
-      {/* Prev / Next arrows */}
-      <button
-        onClick={() => go(current - 1)}
-        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={() => go(current + 1)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
-
-      {/* Dot indicators */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-        {BANNER_IMAGES.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => go(i)}
-            className={`rounded-full transition-all duration-300 ${
-              i === current ? 'w-6 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/50 hover:bg-white/80'
-            }`}
-          />
-        ))}
-      </div>
-    </motion.div>
-  );
-}
+import { AIChatbot } from '../../components/shared/AIChatbot';
 
 export function StudentDashboard() {
-  const { user } = useAuthStore();
-  const { students, courses, exams, results, attendance, fees } = useDataStore();
+  useAuthStore();
+  const navigate = useNavigate();
+  const { students, courses, results, attendance, fees } = useDataStore();
+  const studentId = useStudentId();
 
-  const student = students.find((s) => s.id === user?.id);
+  const student = students.find((s) => s.id === studentId);
   if (!student) return null;
 
   const myCourses = courses.filter((c) => student.enrolledCourses.includes(c.id));
@@ -103,16 +30,50 @@ export function StudentDashboard() {
   const avgScore = myResults.length > 0 ? Math.round(myResults.reduce((a, r) => a + r.percentage, 0) / myResults.length) : 0;
   const totalDue = myFees.reduce((a, f) => a + f.due, 0);
 
-  const upcomingExams = exams.filter((e) => e.status === 'upcoming' && myCourses.some((c) => c.id === e.courseId));
-
-  const radarData = myCourses.map((c) => {
-    const courseResults = myResults.filter((r) => {
-      const exam = exams.find((e) => e.id === r.examId);
-      return exam?.courseId === c.id;
-    });
-    const avg = courseResults.length > 0 ? Math.round(courseResults.reduce((a, r) => a + r.percentage, 0) / courseResults.length) : 0;
-    return { subject: c.code, score: avg };
-  });
+  const noticeBoard = [
+    {
+      id: 'n1',
+      type: 'warning' as const,
+      title: 'Midterm Form Submission',
+      message: 'Submit your midterm exam form by 12 April to avoid late fees.',
+      date: '2026-04-09',
+    },
+    {
+      id: 'n2',
+      type: 'info' as const,
+      title: 'Library Hours Updated',
+      message: 'Central library will remain open until 8:00 PM on weekdays.',
+      date: '2026-04-08',
+    },
+    {
+      id: 'n3',
+      type: 'success' as const,
+      title: 'Scholarship List Published',
+      message: 'Merit scholarship shortlist is now available on the student portal.',
+      date: '2026-04-07',
+    },
+    {
+  id: 'n4',
+  type: 'warning' as const,
+  title: 'Assignment Submission Deadline',
+  message: 'Submit your assignments before 15 April to avoid penalty.',
+  date: '2026-04-10',
+},
+{
+  id: 'n5',
+  type: 'info' as const,
+  title: 'Workshop on Web Development',
+  message: 'Join the live workshop on modern web development this Saturday.',
+  date: '2026-04-11',
+},
+{
+  id: 'n6',
+  type: 'success' as const,
+  title: 'Results Announced',
+  message: 'Semester results have been घोषित. Check your dashboard now.',
+  date: '2026-04-12',
+}
+  ];
 
   const greetingHour = new Date().getHours();
   const greeting = greetingHour < 12 ? 'Good morning' : greetingHour < 17 ? 'Good afternoon' : 'Good evening';
@@ -140,7 +101,7 @@ export function StudentDashboard() {
       svg: (
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12">
           {/* left page */}
-          <rect x="8" y="14" width="21" height="36" rx="3" fill="#6366f1"/>
+          <rect x="8" y="14" width="21" height="36" rx="3" fill="#1a3a6b"/>
           <rect x="10" y="22" width="15" height="2.5" rx="1.2" fill="white" opacity="0.7"/>
           <rect x="10" y="28" width="12" height="2.5" rx="1.2" fill="white" opacity="0.7"/>
           <rect x="10" y="34" width="14" height="2.5" rx="1.2" fill="white" opacity="0.7"/>
@@ -276,7 +237,7 @@ export function StudentDashboard() {
 
             <a
               href="/student/courses"
-              className="inline-block mt-7 px-8 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl transition-colors shadow-sm shadow-brand-200"
+              className="inline-block mt-7 px-8 py-3 bg-brand-600 hover:bg-white hover:border-brand-600 hover:text-brand-600 text-white font-semibold rounded-xl transition-colors shadow-sm shadow-brand-200 border border-transparent"
             >
               View My Courses
             </a>
@@ -286,7 +247,7 @@ export function StudentDashboard() {
           <div className="hidden md:block relative flex-shrink-0 w-[420px] h-72 overflow-visible">
 
             {/* floating dots */}
-            <div className="absolute w-3 h-3 rounded-full bg-blue-400 top-6 left-20 z-10" />
+            <div className="absolute w-3 h-3 rounded-full bg-brand-400 top-6 left-20 z-10" />
             <div className="absolute w-2.5 h-2.5 rounded-full bg-pink-400 top-4 right-6 z-10" />
             <div className="absolute w-3 h-3 rounded-full bg-orange-400 bottom-6 right-28 z-10" />
 
@@ -328,34 +289,45 @@ export function StudentDashboard() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="card relative z-10 -mt-16 mx-20 shadow-xl"
+        whileHover={{ y: -8, transition: { duration: 0.2 } }}
+        className="card relative z-10 -mt-16 mx-20 transition-all duration-300"
+        style={{
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 25px -5px rgba(99, 102, 241, 0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        }}
       >
         <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-y lg:divide-y-0 divide-gray-100 dark:divide-gray-800">
           {stripStats.map((s) => (
-            <div key={s.label} className="flex flex-col items-center gap-1.5 py-3 px-3 cursor-pointer transition-all duration-200 hover:bg-brand-50 dark:hover:bg-brand-900/20 hover:scale-105 rounded-xl group">
+            <motion.div 
+              key={s.label} 
+              whileHover={{ y: -4 }}
+              className="flex flex-col items-center gap-1.5 py-3 px-3 cursor-pointer transition-all duration-200 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-xl"
+            >
               <div className="w-10 h-10 [&>svg]:w-10 [&>svg]:h-10">{s.svg}</div>
               <p className="text-lg font-bold text-gray-900 dark:text-white">{s.value}</p>
               <div className="text-center">
                 <p className="text-xs font-semibold text-gray-700 dark:text-gray-200">{s.label}</p>
                 <p className="text-xs text-gray-400">{s.sub}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </motion.div>
 
       </div>{/* end hero+strip wrapper */}
 
-      {/* ── Sliding Banner ── */}
-      <BannerSlider />
-
-      {/* ── My Courses + Performance Radar ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      {/* ── Main Dashboard Grid: My Courses + Notice Board (spanning full height) + Performance ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 auto-rows-max lg:auto-rows-[minmax(0,1fr)]">
+        
+        {/* My Courses - Left Side, Row 1 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="card lg:col-span-2"
+          whileHover={{ y: -8, transition: { duration: 0.2 } }}
+          className="card lg:col-span-2 transition-all duration-300"
+          style={{
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 25px -5px rgba(99, 102, 241, 0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}
         >
           <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
             <h3 className="font-semibold text-gray-900 dark:text-white">My Courses</h3>
@@ -371,142 +343,143 @@ export function StudentDashboard() {
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{course.name}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{course.teacherName} · {course.schedule}</p>
                 </div>
-                <StatusBadge status={course.status} />
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <StatusBadge status={course.status} />
+                  <button
+                    onClick={() => navigate(`/student/courses/${course.id}`)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-600 transition-colors hover:bg-white hover:border-brand-600 dark:border-brand-900/40 dark:bg-brand-900/20 dark:text-brand-300 dark:hover:bg-white dark:hover:border-brand-600 dark:hover:text-brand-600"
+                  >
+                    Explore
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </motion.div>
 
+        {/* Notice Board - Right Side, Spanning Full Height (Rows 1-2) */}
+        <motion.div 
+          initial={{ opacity: 0, y: 16 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.25 }}
+          whileHover={{ y: -8, transition: { duration: 0.2 } }}
+          className="card lg:row-span-2 overflow-y-auto transition-all duration-300"
+          style={{
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 25px -5px rgba(99, 102, 241, 0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-gray-900 z-10">
+            <h3 className="font-semibold text-gray-900 dark:text-white">Announcement</h3>
+          </div>
+          <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
+            {noticeBoard.map((notice) => {
+              const icon = notice.type === 'warning'
+                ? <AlertTriangle className="w-4 h-4 text-amber-600" />
+                : notice.type === 'success'
+                  ? <CheckCircle className="w-4 h-4 text-emerald-600" />
+                  : <AlertCircle className="w-4 h-4 text-brand-600" />;
+              const iconBg = notice.type === 'warning'
+                ? 'bg-amber-50 dark:bg-amber-900/20'
+                : notice.type === 'success'
+                  ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                  : 'bg-brand-50 dark:bg-brand-900/20';
+
+              return (
+                <motion.div 
+                  key={notice.id} 
+                  whileHover={{ y: -3 }}
+                  className="px-5 py-3.5 flex items-start gap-3 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer rounded-lg hover:shadow-sm"
+                >
+                  <div className={`mt-0.5 p-2 rounded-lg ${iconBg} transition-all duration-200 hover:shadow-md`}>
+                    {icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white transition-colors duration-200 hover:text-brand-600 dark:hover:text-brand-400">{notice.title}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{notice.message}</p>
+                  </div>
+                  <span className="text-xs text-gray-400 whitespace-nowrap transition-colors duration-200 hover:text-gray-600 dark:hover:text-gray-300">{formatDate(notice.date)}</span>
+                </motion.div>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* Performance - Left Side, Row 2 */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="card p-5"
+          transition={{ delay: 0.3 }}
+          whileHover={{ y: -8, transition: { duration: 0.2 } }}
+          className="card lg:col-span-2 transition-all duration-300"
+          style={{
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 10px 25px -5px rgba(99, 102, 241, 0.15), 0 20px 50px -15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}
         >
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Performance</h3>
-          <p className="text-xs text-gray-400 mb-3">Score by subject</p>
-          {radarData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
-              <RadarChart data={radarData}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10 }} />
-                <Radar name="Score" dataKey="score" stroke="#6366f1" fill="#6366f1" fillOpacity={0.2} />
-                <Tooltip formatter={(v) => [`${v}%`]} />
-              </RadarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex items-center justify-center h-40 text-sm text-gray-400">No results yet</div>
-          )}
-        </motion.div>
-      </div>
-
-      {/* ── Upcoming Exams + Course-wise Attendance ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="card">
-          <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Upcoming Exams</h3>
-          </div>
-          <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
-            {upcomingExams.length === 0 ? (
-              <div className="px-5 py-8 text-center text-sm text-gray-400">No upcoming exams 🎉</div>
-            ) : upcomingExams.map((exam) => (
-              <div key={exam.id} className="px-5 py-3.5 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-                  <Clock className="w-4 h-4 text-amber-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{exam.title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{formatDate(exam.date)} · {exam.duration} min</p>
-                </div>
-                <span className="text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full">{exam.totalMarks} marks</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="card p-5">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-5">Course-wise Attendance</h3>
-          {myCourses.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">No courses enrolled</p>
-          ) : (
-            <div className="flex flex-wrap justify-around gap-4">
-              {myCourses.map((course, idx) => {
-                const cRecords = myAttendance.filter((a) => a.courseId === course.id);
-                const cPresent = cRecords.filter((a) => a.status === 'present').length;
-                const cPct = cRecords.length > 0 ? Math.round((cPresent / cRecords.length) * 100) : 0;
-                const r = 38;
-                const circ = 2 * Math.PI * r;
-                const offset = circ - (cPct / 100) * circ;
-                const strokeColor = cPct >= 80 ? '#10b981' : cPct >= 65 ? '#f59e0b' : '#ef4444';
-                const bgColor = cPct >= 80 ? '#d1fae5' : cPct >= 65 ? '#fef3c7' : '#fee2e2';
-                const textColor = cPct >= 80 ? 'text-emerald-600' : cPct >= 65 ? 'text-amber-500' : 'text-red-500';
-                return (
-                  <motion.div
-                    key={course.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.4 + idx * 0.1, type: 'spring', stiffness: 200 }}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <div className="relative w-24 h-24">
-                      <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                        {/* track */}
-                        <circle cx="50" cy="50" r={r} stroke={bgColor} strokeWidth="10" fill="none" />
-                        {/* progress */}
-                        <motion.circle
-                          cx="50" cy="50" r={r}
-                          stroke={strokeColor} strokeWidth="10" fill="none"
-                          strokeLinecap="round"
-                          strokeDasharray={circ}
-                          initial={{ strokeDashoffset: circ }}
-                          animate={{ strokeDashoffset: offset }}
-                          transition={{ duration: 1.2, delay: 0.5 + idx * 0.1, ease: 'easeOut' }}
-                        />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={`text-base font-bold ${textColor}`}>{cPct}%</span>
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{course.code}</p>
-                      <p className="text-xs text-gray-400">{cPresent}/{cRecords.length} classes</p>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          )}
-        </motion.div>
-      </div>
-
-      {/* ── Recent Results ── */}
-      {myResults.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="card">
           <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Recent Results</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Performance</h3>
             <a href="/student/results" className="text-xs text-brand-600 hover:underline">View all →</a>
           </div>
-          <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
-            {myResults.slice(0, 3).map((r) => (
-              <div key={r.id} className="px-5 py-3.5 flex items-center gap-4 table-row-hover">
-                <div className={`p-2 rounded-lg ${r.status === 'pass' ? 'bg-emerald-50 dark:bg-emerald-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
-                  <Trophy className={`w-4 h-4 ${r.status === 'pass' ? 'text-emerald-600' : 'text-red-500'}`} />
+          {myResults.length > 0 ? (
+            <>
+              {/* Marks Table by Subject */}
+              <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
+                <div className="px-5 py-3">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-2">Marks by Subject</p>
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th className="text-left py-2 px-0 text-xs font-semibold text-gray-600 dark:text-gray-400">Subject</th>
+                        <th className="text-center py-2 px-2 text-xs font-semibold text-gray-600 dark:text-gray-400">Marks</th>
+                        <th className="text-center py-2 px-2 text-xs font-semibold text-gray-600 dark:text-gray-400">%</th>
+                        <th className="text-right py-2 px-0 text-xs font-semibold text-gray-600 dark:text-gray-400">Grade</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myResults.map((result) => (
+                        <tr key={result.id} className="border-b border-gray-100 dark:border-gray-800">
+                          <td className="py-2 px-0 text-sm text-gray-900 dark:text-gray-100">{result.examTitle}</td>
+                          <td className="text-center py-2 px-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {result.marksObtained}/{result.totalMarks}
+                          </td>
+                          <td className={`text-center py-2 px-2 text-sm font-semibold ${result.percentage >= 80 ? 'text-emerald-600' : result.percentage >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                            {result.percentage}%
+                          </td>
+                          <td className={`text-right py-2 px-0 text-sm font-bold ${result.percentage >= 80 ? 'text-emerald-600' : result.percentage >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                            {result.grade}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{r.examTitle}</p>
-                  <p className="text-xs text-gray-400">{r.marksObtained}/{r.totalMarks} marks</p>
-                </div>
-                <div className="text-right">
-                  <p className={`text-lg font-bold ${r.percentage >= 80 ? 'text-emerald-600' : r.percentage >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
-                    {r.grade}
-                  </p>
-                  <p className="text-xs text-gray-400">{r.percentage}%</p>
+
+                {/* Last Exam CGPA */}
+                <div className="px-5 py-3 bg-brand-50 dark:bg-brand-900/10">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold">Last SRM CGPA</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                        {myResults[0].examTitle}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-3xl font-bold ${myResults[0].percentage >= 80 ? 'text-emerald-600' : myResults[0].percentage >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                        {myResults[0].percentage}%
+                      </p>
+                      <p className={`text-sm font-semibold mt-1 ${myResults[0].percentage >= 80 ? 'text-emerald-600' : myResults[0].percentage >= 60 ? 'text-amber-600' : 'text-red-500'}`}>
+                        {myResults[0].grade}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <div className="px-5 py-8 text-center text-sm text-gray-400">No results yet</div>
+          )}
         </motion.div>
-      )}
+      </div>
+      <AIChatbot />
     </div>
   );
 }

@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Users, GraduationCap, BookOpen,
   ClipboardList, DollarSign, FileText, BarChart3,
-  ChevronLeft, ChevronRight, LogOut, BookMarked,
+  ChevronLeft, ChevronRight, LogOut,
   CalendarCheck, Trophy, X,
 } from 'lucide-react';
+import logoImg from '../../assets/E-School logo with vibrant colors.png';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { Avatar } from '../ui/Avatar';
@@ -95,7 +96,7 @@ export function Sidebar({ role }: SidebarProps) {
         style={{ width: sidebarOpen ? 240 : 64 }}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
+        <div className="flex items-center justify-between h-24 px-4 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
           <AnimatePresence mode="wait">
             {sidebarOpen ? (
               <motion.div
@@ -103,14 +104,12 @@ export function Sidebar({ role }: SidebarProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center gap-2.5 overflow-hidden"
+                className="flex items-center gap-2 overflow-hidden"
               >
-                <div className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center flex-shrink-0">
-                  <BookOpen className="w-4 h-4 text-white" />
-                </div>
+                <img src={logoImg} alt="E-School" className="w-16 h-16 object-contain flex-shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white leading-none truncate">eSchool</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Institute ERP</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white leading-none truncate">E-School</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Smart Learning Platform</p>
                 </div>
               </motion.div>
             ) : (
@@ -119,9 +118,9 @@ export function Sidebar({ role }: SidebarProps) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center mx-auto"
+                className="mx-auto"
               >
-                <BookOpen className="w-4 h-4 text-white" />
+                <img src={logoImg} alt="E-School" className="w-12 h-12 object-contain" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -147,7 +146,7 @@ export function Sidebar({ role }: SidebarProps) {
           {nav.map((group) => (
             <div key={group.group} className="mb-6">
               {sidebarOpen && (
-                <p className="px-4 mb-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">
+                <p className="px-4 mb-2.5 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   {group.group}
                 </p>
               )}
@@ -159,23 +158,20 @@ export function Sidebar({ role }: SidebarProps) {
                       end={item.end}
                       className={({ isActive }) =>
                         cn(
-                          'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
+                          'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
                           'group relative',
                           isActive
-                            ? 'bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100'
+                            ? 'bg-brand-600 dark:bg-brand-700 text-white shadow-md shadow-brand-200 dark:shadow-brand-900/30'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-brand-50 dark:hover:bg-brand-900/20 hover:text-brand-600 dark:hover:text-brand-400'
                         )
                       }
                     >
                       {({ isActive }) => (
                         <>
-                          {isActive && (
-                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-brand-600 rounded-r-full" />
-                          )}
-                          <item.icon className={cn('w-4 h-4 flex-shrink-0', isActive ? 'text-brand-600 dark:text-brand-400' : '')} />
+                          <item.icon className={cn('w-4 h-4 flex-shrink-0 transition-transform duration-200', isActive ? '' : 'group-hover:scale-110')} />
                           {sidebarOpen && <span className="truncate">{item.label}</span>}
                           {!sidebarOpen && (
-                            <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-md
+                            <div className="absolute left-full ml-2 px-3 py-2 bg-gray-900 dark:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-lg
                                             opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50">
                               {item.label}
                             </div>
@@ -191,8 +187,8 @@ export function Sidebar({ role }: SidebarProps) {
         </nav>
 
         {/* User profile */}
-        <div className="flex-shrink-0 p-3 border-t border-gray-100 dark:border-gray-800">
-          <div className={cn('flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors', !sidebarOpen && 'justify-center')}>
+        <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+          <div className={cn('flex items-center gap-3 p-2.5 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-all duration-200', !sidebarOpen && 'justify-center')}>
             <Avatar name={user?.name || ''} src={user?.avatar} size="sm" />
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
@@ -203,7 +199,7 @@ export function Sidebar({ role }: SidebarProps) {
             {sidebarOpen && (
               <button
                 onClick={handleLogout}
-                className="p-1.5 text-gray-400 hover:text-red-500 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/25 transition-all duration-200 hover:scale-110"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />

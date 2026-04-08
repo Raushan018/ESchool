@@ -75,6 +75,7 @@ export interface CourseMaterial {
   size?: string;
   uploadedAt: string;
   description?: string;
+  category?: 'live' | 'recorded';
 }
 
 // ─── Attendance ──────────────────────────────────────────────────────────────

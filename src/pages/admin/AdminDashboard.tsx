@@ -10,6 +10,7 @@ import {
 import { StatCard } from '../../components/ui/StatCard';
 import { useDataStore } from '../../store/dataStore';
 import { formatCurrency } from '../../utils/helpers';
+import { AIChatbot } from '../../components/shared/AIChatbot';
 import {
   ENROLLMENT_TREND, REVENUE_DATA, DEPARTMENT_DISTRIBUTION, ATTENDANCE_OVERVIEW,
 } from '../../data/mockData';
@@ -25,7 +26,7 @@ export function AdminDashboard() {
     { title: 'Total Students', value: students.length, change: `${activeStudents} active`, icon: GraduationCap, iconColor: 'text-brand-600', iconBg: 'bg-brand-50 dark:bg-brand-900/20' },
     { title: 'Faculty Members', value: teachers.length, change: `${teachers.filter(t => t.status === 'active').length} active`, icon: Users, iconColor: 'text-emerald-600', iconBg: 'bg-emerald-50 dark:bg-emerald-900/20' },
     { title: 'Active Courses', value: courses.filter(c => c.status === 'active').length, change: `${courses.length} total`, icon: BookOpen, iconColor: 'text-amber-600', iconBg: 'bg-amber-50 dark:bg-amber-900/20' },
-    { title: 'Revenue Collected', value: formatCurrency(totalRevenue), change: `${formatCurrency(pendingFees)} pending`, positive: false, icon: DollarSign, iconColor: 'text-sky-600', iconBg: 'bg-sky-50 dark:bg-sky-900/20' },
+    { title: 'Revenue Collected', value: formatCurrency(totalRevenue), change: `${formatCurrency(pendingFees)} pending`, positive: false, icon: DollarSign, iconColor: 'text-brand-600', iconBg: 'bg-brand-50 dark:bg-brand-900/20' },
   ];
 
   const recentStudents = students.slice(0, 5);
@@ -68,8 +69,8 @@ export function AdminDashboard() {
             <AreaChart data={ENROLLMENT_TREND} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#1a3a6b" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#1a3a6b" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-gray-100 dark:text-gray-800" />
@@ -83,7 +84,7 @@ export function AdminDashboard() {
                   fontSize: '12px',
                 }}
               />
-              <Area type="monotone" dataKey="students" stroke="#6366f1" strokeWidth={2} fill="url(#colorStudents)" />
+              <Area type="monotone" dataKey="students" stroke="#1a3a6b" strokeWidth={2} fill="url(#colorStudents)" />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
@@ -145,7 +146,7 @@ export function AdminDashboard() {
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} />
               <Tooltip formatter={(v) => [formatCurrency(Number(v))]} />
               <Legend />
-              <Bar dataKey="revenue" name="Revenue" fill="#6366f1" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="revenue" name="Revenue" fill="#1a3a6b" radius={[3, 3, 0, 0]} />
               <Bar dataKey="expenses" name="Expenses" fill="#10b981" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -218,7 +219,7 @@ export function AdminDashboard() {
           { label: 'Avg Attendance', value: '84.6%', icon: CalendarCheck, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
           { label: 'Exams This Month', value: '4', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-900/20' },
           { label: 'Pass Rate', value: '91.2%', icon: Award, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/20' },
-          { label: 'Fee Collection Rate', value: '72%', icon: TrendingUp, color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-900/20' },
+          { label: 'Fee Collection Rate', value: '72%', icon: TrendingUp, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/20' },
         ].map((item, i) => (
           <motion.div
             key={item.label}
@@ -237,6 +238,7 @@ export function AdminDashboard() {
           </motion.div>
         ))}
       </div>
+      <AIChatbot />
     </div>
   );
 }

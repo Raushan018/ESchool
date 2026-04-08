@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Users, Clock, Calendar } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
+import { useStudentId } from '../../hooks/useStudentId';
 import { StatusBadge } from '../../components/ui/Badge';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { EmptyState } from '../../components/ui/EmptyState';
@@ -20,10 +20,10 @@ const COURSE_IMAGES: Record<string, string> = {
 
 export function MyCoursesPage() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
   const { students, courses } = useDataStore();
+  const studentId = useStudentId();
 
-  const student = students.find((s) => s.id === user?.id);
+  const student = students.find((s) => s.id === studentId);
   const myCourses = courses.filter((c) => student?.enrolledCourses.includes(c.id));
 
   return (
@@ -99,7 +99,7 @@ export function MyCoursesPage() {
 
                 <button
                   onClick={() => navigate(`/student/courses/${course.id}`)}
-                  className="mt-3 flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 text-xs font-semibold hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors"
+                  className="mt-3 flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 text-xs font-semibold border border-transparent hover:bg-white hover:border-brand-600 dark:hover:bg-white dark:hover:border-brand-600 dark:hover:text-brand-600 transition-colors"
                 >
                   <BookOpen className="w-3.5 h-3.5" />
                   Explore

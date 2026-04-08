@@ -9,6 +9,7 @@ import { StudentLayout } from './layouts/StudentLayout';
 
 // Auth
 import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
 import { AuthGuard } from './components/shared/AuthGuard';
 
 // Admin Pages
@@ -53,6 +54,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Admin Routes */}
         <Route

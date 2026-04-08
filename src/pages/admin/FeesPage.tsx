@@ -46,7 +46,7 @@ export function FeesPage() {
     paid: <CheckCircle className="w-4 h-4 text-emerald-500" />,
     pending: <Clock className="w-4 h-4 text-amber-500" />,
     overdue: <AlertTriangle className="w-4 h-4 text-red-500" />,
-    partial: <TrendingUp className="w-4 h-4 text-blue-500" />,
+    partial: <TrendingUp className="w-4 h-4 text-brand-600" />,
   };
 
   return (

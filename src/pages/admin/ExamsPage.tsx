@@ -38,7 +38,7 @@ export function ExamsPage() {
           { label: 'Total Exams', value: exams.length, icon: FileText, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/20' },
           { label: 'Results Published', value: results.length, icon: Trophy, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-900/20' },
           { label: 'Pass Count', value: totalPassed, icon: Users, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-          { label: 'Average Score', value: `${avgScore}%`, icon: BarChart3, color: 'text-sky-600', bg: 'bg-sky-50 dark:bg-sky-900/20' },
+          { label: 'Average Score', value: `${avgScore}%`, icon: BarChart3, color: 'text-brand-600', bg: 'bg-brand-50 dark:bg-brand-900/20' },
         ].map((item, i) => (
           <motion.div
             key={item.label}
@@ -64,10 +64,10 @@ export function ExamsPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
               activeTab === tab.id
-                ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm border-brand-600'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 border-transparent hover:border-brand-600 hover:bg-white dark:hover:bg-gray-800'
             }`}
           >
             {tab.label}
@@ -198,7 +198,7 @@ export function ExamsPage() {
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} tickFormatter={(v) => `${v}`} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="avg" name="Average Score" fill="#6366f1" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="avg" name="Average Score" fill="#1a3a6b" radius={[3, 3, 0, 0]} />
               <Bar dataKey="highest" name="Highest Score" fill="#10b981" radius={[3, 3, 0, 0]} />
               <Bar dataKey="passing" name="Pass Rate %" fill="#f59e0b" radius={[3, 3, 0, 0]} />
             </BarChart>

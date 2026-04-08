@@ -1,136 +1,25 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronDown, AlertTriangle, CheckCircle, BookOpen } from 'lucide-react';
+import { ChevronDown, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
-
-// ─── Helpers ───────────────────────────────────────────────────────────────────
-function getDaysInMonth(year: number, month: number) {
-  return new Date(year, month + 1, 0).getDate();
-}
+import { useStudentId } from '../../hooks/useStudentId';
 
 function getMonthLabel(key: string) {
   const [y, m] = key.split('-').map(Number);
   return new Date(y, m - 1, 1).toLocaleString('en-IN', { month: 'long', year: 'numeric' });
 }
 
-// ─── Day Cell ──────────────────────────────────────────────────────────────────
-function DayCell({ day, status }: { day: number; status: 'present' | 'absent' | 'late' | null }) {
-  if (!status) {
-    return (
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-semibold text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800">
-        {day}
-      </div>
-    );
-  }
-  const styles = {
-    present: 'bg-emerald-500 text-white border-emerald-500',
-    absent:  'bg-red-500 text-white border-red-500',
-    late:    'bg-amber-400 text-white border-amber-400',
-  };
-  const label = { present: 'P', absent: 'A', late: 'L' };
+// ─── Status icon ───────────────────────────────────────────────────────────────
+function StatusCheck({ active, color }: { active: boolean; color: string }) {
   return (
-    <div className={`w-8 h-8 rounded-lg flex flex-col items-center justify-center border ${styles[status]}`}>
-      <span className="text-[9px] font-semibold leading-none opacity-75">{day}</span>
-      <span className="text-[11px] font-black leading-none">{label[status]}</span>
+    <div className={`w-5 h-5 rounded border-2 flex items-center justify-center mx-auto transition-colors ${active ? `${color} border-transparent` : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'}`}>
+      {active && (
+        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      )}
     </div>
-  );
-}
-
-// ─── Course Attendance Card ────────────────────────────────────────────────────
-function CourseCard({
-  courseName, courseCode, teacherName,
-  records, year, month, index,
-}: {
-  courseName: string; courseCode: string; teacherName: string;
-  records: Record<number, 'present' | 'absent' | 'late'>;
-  year: number; month: number; index: number;
-}) {
-  const days = getDaysInMonth(year, month);
-  const allDays = Array.from({ length: 30 }, (_, i) => i + 1); // show 30 slots always
-
-  const presentCount = Object.values(records).filter((s) => s === 'present').length;
-  const absentCount  = Object.values(records).filter((s) => s === 'absent').length;
-  const lateCount    = Object.values(records).filter((s) => s === 'late').length;
-  const total = Object.keys(records).length;
-  const pct = total > 0 ? Math.round((presentCount / total) * 100) : 0;
-  const pctColor = pct >= 75 ? 'text-emerald-600' : pct >= 60 ? 'text-amber-500' : 'text-red-500';
-  const barColor = pct >= 75 ? 'bg-emerald-500' : pct >= 60 ? 'bg-amber-400' : 'bg-red-500';
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08 }}
-      className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden shadow-sm"
-    >
-      {/* Card header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center flex-shrink-0">
-            <BookOpen className="w-4 h-4 text-brand-600 dark:text-brand-400" />
-          </div>
-          <div>
-            <p className="font-bold text-gray-900 dark:text-white text-sm">{courseName}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{courseCode} · {teacherName}</p>
-          </div>
-        </div>
-
-        {/* Stats summary */}
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-3 text-xs">
-            <span className="flex items-center gap-1 font-semibold text-emerald-600">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> {presentCount} P
-            </span>
-            <span className="flex items-center gap-1 font-semibold text-red-500">
-              <span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> {absentCount} A
-            </span>
-            {lateCount > 0 && (
-              <span className="flex items-center gap-1 font-semibold text-amber-500">
-                <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" /> {lateCount} L
-              </span>
-            )}
-          </div>
-          <div className="text-right">
-            <p className={`text-xl font-black ${pctColor}`}>{pct}%</p>
-            <p className="text-[10px] text-gray-400">{total} classes</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Progress bar */}
-      <div className="px-5 pt-3">
-        <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-          <motion.div
-            className={`h-full rounded-full ${barColor}`}
-            initial={{ width: 0 }}
-            animate={{ width: `${pct}%` }}
-            transition={{ duration: 0.8, delay: index * 0.08 + 0.2 }}
-          />
-        </div>
-        {pct < 75 && (
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-red-500">
-            <AlertTriangle className="w-3 h-3" /> Below 75% — at risk of exam debarment
-          </div>
-        )}
-      </div>
-
-      {/* 30-day grid */}
-      <div className="px-5 py-4">
-        <div className="flex flex-wrap gap-1.5">
-          {allDays.map((day) => {
-            const status = day <= days ? (records[day] ?? null) : null;
-            // days beyond month's last day are greyed completely
-            if (day > days) {
-              return (
-                <div key={day} className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-gray-800/20 border border-dashed border-gray-100 dark:border-gray-800 opacity-30" />
-              );
-            }
-            return <DayCell key={day} day={day} status={status} />;
-          })}
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -138,98 +27,95 @@ function CourseCard({
 export function StudentAttendancePage() {
   const { user } = useAuthStore();
   const { students, courses, attendance } = useDataStore();
+  const studentId = useStudentId();
 
-  const student = students.find((s) => s.id === user?.id);
+  const student = students.find((s) => s.id === studentId);
   const myCourses = courses.filter((c) => student?.enrolledCourses.includes(c.id));
-  const myAttendance = attendance.filter((a) => a.studentId === user?.id);
+  const myAttendance = attendance.filter((a) => a.studentId === studentId);
 
-  // Build sorted list of months that have data
+  // Available months
   const availableMonths = useMemo(() => {
     const keys = new Set<string>();
     myAttendance.forEach((a) => {
       const [y, m] = a.date.split('-');
       keys.add(`${y}-${m}`);
     });
-    return Array.from(keys).sort().reverse(); // most recent first
+    return Array.from(keys).sort().reverse();
   }, [myAttendance]);
 
   const [selectedMonth, setSelectedMonth] = useState<string>(availableMonths[0] ?? '');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen]   = useState(false);
 
-  const [selYear, selMonth] = selectedMonth
-    ? selectedMonth.split('-').map(Number)
-    : [new Date().getFullYear(), new Date().getMonth() + 1];
+  // All dates in the selected month that have any record for this student
+  const datesInMonth = useMemo(() => {
+    const d = new Set<string>();
+    myAttendance.filter((a) => a.date.startsWith(selectedMonth)).forEach((a) => d.add(a.date));
+    return Array.from(d).sort().reverse();
+  }, [myAttendance, selectedMonth]);
 
-  // Filter attendance for selected month
-  const monthAttendance = myAttendance.filter((a) => a.date.startsWith(selectedMonth));
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
-  // Overall stats for selected month
-  const presentTotal = monthAttendance.filter((a) => a.status === 'present').length;
-  const absentTotal  = monthAttendance.filter((a) => a.status === 'absent').length;
-  const lateTotal    = monthAttendance.filter((a) => a.status === 'late').length;
-  const overallPct   = monthAttendance.length > 0 ? Math.round((presentTotal / monthAttendance.length) * 100) : 0;
+  // When month changes, reset date
+  const handleMonthChange = (key: string) => {
+    setSelectedMonth(key);
+    setDropdownOpen(false);
+    setSelectedDate('');
+  };
 
-  // Per-course day map: courseId → { day → status }
-  const courseRecords = useMemo(() => {
-    const map: Record<string, Record<number, 'present' | 'absent' | 'late'>> = {};
-    myCourses.forEach((c) => { map[c.id] = {}; });
-    monthAttendance.forEach((a) => {
-      const day = parseInt(a.date.split('-')[2], 10);
-      if (map[a.courseId]) {
-        map[a.courseId][day] = a.status as 'present' | 'absent' | 'late';
-      }
+  // Attendance records for the current view
+  const viewRecords = useMemo(() => {
+    const source = selectedDate
+      ? myAttendance.filter((a) => a.date === selectedDate)
+      : myAttendance.filter((a) => a.date.startsWith(selectedMonth));
+    return source;
+  }, [myAttendance, selectedMonth, selectedDate]);
+
+  // Monthly overall stats (for summary banner, always month-wide)
+  const monthRecords = myAttendance.filter((a) => a.date.startsWith(selectedMonth));
+  const presentTotal = monthRecords.filter((a) => a.status === 'present').length;
+  const absentTotal  = monthRecords.filter((a) => a.status === 'absent').length;
+  const lateTotal    = monthRecords.filter((a) => a.status === 'late').length;
+  const overallPct   = monthRecords.length > 0 ? Math.round((presentTotal / monthRecords.length) * 100) : 0;
+
+  // Per-course stats for the table
+  const courseStats = useMemo(() => {
+    return myCourses.map((c) => {
+      const recs = viewRecords.filter((a) => a.courseId === c.id);
+      const p = recs.filter((a) => a.status === 'present').length;
+      const a = recs.filter((a) => a.status === 'absent').length;
+      const l = recs.filter((a) => a.status === 'late').length;
+      const total = recs.length;
+      const pct   = total > 0 ? Math.round((p / total) * 100) : null;
+
+      // For daily view: single status
+      const dayStatus = selectedDate ? (recs[0]?.status ?? null) : null;
+
+      return { course: c, p, a, l, total, pct, dayStatus };
     });
-    return map;
-  }, [monthAttendance, myCourses]);
+  }, [myCourses, viewRecords, selectedDate]);
+
+  const isDailyView = !!selectedDate;
 
   return (
     <div className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Attendance</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Monthly attendance across all subjects</p>
-        </div>
 
-        {/* Month dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen((o) => !o)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 border-brand-200 dark:border-brand-700 bg-white dark:bg-gray-900 text-sm font-semibold text-gray-900 dark:text-white hover:border-brand-400 transition-colors shadow-sm min-w-[180px] justify-between"
-          >
-            <span>{selectedMonth ? getMonthLabel(selectedMonth) : 'Select month'}</span>
-            <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
-          </button>
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-1.5 w-52 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-20 overflow-hidden">
-              {availableMonths.map((key) => (
-                <button
-                  key={key}
-                  onClick={() => { setSelectedMonth(key); setDropdownOpen(false); }}
-                  className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                    key === selectedMonth
-                      ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 font-semibold'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {getMonthLabel(key)}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* ── Page Header ── */}
+      <div>
+        <h1 className="text-2xl font-black text-gray-900 dark:text-white">Attendance</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Monthly attendance across all subjects</p>
       </div>
 
-      {/* Overall summary for selected month */}
+      {/* ── Summary Banner ── */}
       <motion.div
+        key={selectedMonth}
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        key={selectedMonth}
-        className="rounded-2xl bg-gradient-to-r from-brand-600 to-indigo-600 p-5 text-white"
+        className="rounded-2xl p-5 text-white"
+        style={{ background: 'linear-gradient(135deg, #1a3a6b 0%, #2c5aa0 100%)' }}
       >
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <p className="text-brand-200 text-xs font-semibold uppercase tracking-wider mb-1">
+            <p className="text-blue-200 text-xs font-semibold uppercase tracking-wider mb-1">
               {selectedMonth ? getMonthLabel(selectedMonth) : ''} — Overall
             </p>
             <div className="flex items-center gap-3">
@@ -253,13 +139,12 @@ export function StudentAttendancePage() {
               />
             </div>
           </div>
-
           <div className="flex items-center gap-6">
             {[
               { label: 'Present', value: presentTotal, color: 'text-emerald-300' },
               { label: 'Absent',  value: absentTotal,  color: 'text-red-300' },
-              { label: 'Late',    value: lateTotal,    color: 'text-amber-300' },
-              { label: 'Total',   value: monthAttendance.length, color: 'text-white' },
+              { label: 'Late',    value: lateTotal,     color: 'text-amber-300' },
+              { label: 'Total',   value: monthRecords.length, color: 'text-white' },
             ].map(({ label, value, color }) => (
               <div key={label} className="text-center">
                 <p className={`text-2xl font-black ${color}`}>{value}</p>
@@ -270,42 +155,177 @@ export function StudentAttendancePage() {
         </div>
       </motion.div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 text-xs font-semibold">
+      {/* ── Legend ── */}
+      <div className="flex items-center gap-5 text-xs font-semibold flex-wrap">
         {[
           { color: 'bg-emerald-500', label: 'P — Present' },
           { color: 'bg-red-500',     label: 'A — Absent' },
           { color: 'bg-amber-400',   label: 'L — Late' },
-          { color: 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700', label: 'No class' },
+          { color: 'bg-gray-200 dark:bg-gray-700', label: 'No class' },
         ].map(({ color, label }) => (
           <div key={label} className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-            <span className={`w-5 h-5 rounded-md ${color} inline-block flex-shrink-0`} />
+            <span className={`w-4 h-4 rounded ${color} inline-block flex-shrink-0`} />
             {label}
           </div>
         ))}
       </div>
 
-      {/* Per-course cards */}
-      {monthAttendance.length === 0 ? (
-        <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-10 text-center">
-          <p className="text-gray-400 text-sm">No attendance records for this month.</p>
+      {/* ── Attendance Sheet Card ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+      >
+        {/* Card header + filters */}
+        <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+          <p className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">Attendance Sheet</p>
+          <div className="flex flex-wrap gap-4">
+
+            {/* Month dropdown */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-gray-500 dark:text-gray-400 font-medium">Month</label>
+              <div className="relative">
+                <button
+                  onClick={() => setDropdownOpen((o) => !o)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-gray-400 transition-colors min-w-[200px] justify-between"
+                >
+                  <span>{selectedMonth ? getMonthLabel(selectedMonth) : 'Select month'}</span>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute left-0 mt-1 w-52 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-20 overflow-hidden">
+                    {availableMonths.map((key) => (
+                      <button
+                        key={key}
+                        onClick={() => handleMonthChange(key)}
+                        className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                          key === selectedMonth
+                            ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-semibold'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        {getMonthLabel(key)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Date picker */}
+            <div className="flex flex-col gap-1">
+              <label className="text-xs text-gray-500 dark:text-gray-400 font-medium">Date</label>
+              <select
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium text-gray-800 dark:text-gray-200 hover:border-gray-400 transition-colors min-w-[180px] focus:outline-none focus:border-brand-400"
+              >
+                <option value="">All dates (monthly)</option>
+                {datesInMonth.map((d) => (
+                  <option key={d} value={d}>
+                    {new Date(d).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {myCourses.map((course, i) => (
-            <CourseCard
-              key={course.id}
-              courseName={course.name}
-              courseCode={course.code}
-              teacherName={course.teacherName}
-              records={courseRecords[course.id] ?? {}}
-              year={selYear}
-              month={selMonth}
-              index={i}
-            />
-          ))}
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ background: '#1a3a6b' }}>
+                <th className="text-left px-6 py-3.5 text-white font-semibold text-sm w-1/2">Subjects</th>
+                <th className="text-center px-4 py-3.5 text-white font-semibold text-sm">Present</th>
+                <th className="text-center px-4 py-3.5 text-white font-semibold text-sm">Late</th>
+                <th className="text-center px-4 py-3.5 text-white font-semibold text-sm">Absent</th>
+                <th className="text-center px-4 py-3.5 text-white font-semibold text-sm">
+                  {isDailyView ? 'Holiday' : 'Total / %'}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+              {courseStats.map(({ course, p, a, l, total, pct, dayStatus }, idx) => {
+                const hasRecord = total > 0;
+                return (
+                  <motion.tr
+                    key={course.id}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
+                  >
+                    {/* Subject */}
+                    <td className="px-6 py-3.5">
+                      <p className="font-semibold text-gray-800 dark:text-gray-100">{course.name}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{course.code} · {course.teacherName}</p>
+                    </td>
+
+                    {isDailyView ? (
+                      <>
+                        <td className="px-4 py-3.5 text-center">
+                          <StatusCheck active={dayStatus === 'present'} color="bg-emerald-500" />
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <StatusCheck active={dayStatus === 'late'} color="bg-amber-400" />
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <StatusCheck active={dayStatus === 'absent'} color="bg-red-500" />
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <StatusCheck active={dayStatus === null && !hasRecord} color="bg-gray-300" />
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        {/* Monthly summary columns */}
+                        <td className="px-4 py-3.5 text-center">
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${p > 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`}>
+                            {p > 0 ? p : '—'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${l > 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'text-gray-300 dark:text-gray-600'}`}>
+                            {l > 0 ? l : '—'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${a > 0 ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'text-gray-300 dark:text-gray-600'}`}>
+                            {a > 0 ? a : '—'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          {pct !== null ? (
+                            <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                              pct >= 75 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                              : pct >= 60 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                              : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            }`}>
+                              {total} cls · {pct}%
+                            </span>
+                          ) : (
+                            <span className="text-gray-300 dark:text-gray-600 text-xs">—</span>
+                          )}
+                        </td>
+                      </>
+                    )}
+                  </motion.tr>
+                );
+              })}
+
+              {courseStats.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-gray-400">
+                    No attendance records for this period.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
+      </motion.div>
     </div>
   );
 }

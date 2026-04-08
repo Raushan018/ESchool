@@ -144,9 +144,12 @@ export const COURSES: Course[] = [
     status: 'active', startDate: '2024-07-15', endDate: '2024-11-15',
     schedule: 'Mon, Wed, Fri - 10:00 AM',
     materials: [
-      { id: 'm1', title: 'Chapter 1 - Arrays & Strings', type: 'pdf', url: '#', size: '2.4 MB', uploadedAt: '2024-07-20', description: 'Introduction to arrays and string manipulation' },
-      { id: 'm2', title: 'Lecture 1 Recording', type: 'video', url: '#', uploadedAt: '2024-07-17', description: 'Full class recording - Introduction' },
-      { id: 'm3', title: 'Problem Set 1', type: 'doc', url: '#', size: '500 KB', uploadedAt: '2024-07-22' },
+      { id: 'm1', title: 'Chapter 1 - Arrays & Strings', type: 'pdf', url: '#', size: '2.4 MB', uploadedAt: '2024-07-20', description: 'Introduction to arrays and string manipulation', category: 'recorded' },
+      { id: 'm2', title: 'Lecture 1 Recording', type: 'video', url: '#', uploadedAt: '2024-07-17', description: 'Full class recording - Introduction', category: 'recorded' },
+      { id: 'm3', title: 'Problem Set 1', type: 'doc', url: '#', size: '500 KB', uploadedAt: '2024-07-22', category: 'recorded' },
+      { id: 'm7', title: 'Live Session - Sorting Algorithms', type: 'video', url: '#', uploadedAt: '2024-07-24', description: 'Live class on bubble sort, merge sort & quick sort', category: 'live' },
+      { id: 'm8', title: 'Live Doubt Session - Arrays', type: 'video', url: '#', uploadedAt: '2024-07-28', description: 'Q&A session on array problems and edge cases', category: 'live' },
+      { id: 'm9', title: 'Live Session - Linked Lists Intro', type: 'video', url: '#', uploadedAt: '2024-08-02', description: 'Introduction to singly and doubly linked lists', category: 'live' },
     ],
   },
   {
@@ -354,6 +357,31 @@ export const FEES: FeeRecord[] = [
     status: 'paid', semester: 'Semester 1', feeType: 'Tuition Fee', transactionId: 'TXN2024001',
   },
   {
+    id: 'f1b', studentId: 's1', studentName: 'Arjun Sharma', rollNumber: 'CS2024001',
+    amount: 3500, paid: 3500, due: 0, dueDate: '2024-08-15', paidDate: '2024-08-10',
+    status: 'paid', semester: 'Semester 1', feeType: 'Examination Fee', transactionId: 'TXN2024001B',
+  },
+  {
+    id: 'f1c', studentId: 's1', studentName: 'Arjun Sharma', rollNumber: 'CS2024001',
+    amount: 1200, paid: 1200, due: 0, dueDate: '2024-08-15', paidDate: '2024-08-10',
+    status: 'paid', semester: 'Semester 1', feeType: 'Library Fee', transactionId: 'TXN2024001C',
+  },
+  {
+    id: 'f1d', studentId: 's1', studentName: 'Arjun Sharma', rollNumber: 'CS2024001',
+    amount: 48000, paid: 48000, due: 0, dueDate: '2025-02-15', paidDate: '2025-02-12',
+    status: 'paid', semester: 'Semester 2', feeType: 'Tuition Fee', transactionId: 'TXN2025001',
+  },
+  {
+    id: 'f1e', studentId: 's1', studentName: 'Arjun Sharma', rollNumber: 'CS2024001',
+    amount: 3500, paid: 0, due: 3500, dueDate: '2025-02-15',
+    status: 'pending', semester: 'Semester 2', feeType: 'Examination Fee',
+  },
+  {
+    id: 'f1f', studentId: 's1', studentName: 'Arjun Sharma', rollNumber: 'CS2024001',
+    amount: 800, paid: 0, due: 800, dueDate: '2025-02-15',
+    status: 'pending', semester: 'Semester 2', feeType: 'Lab Fee',
+  },
+  {
     id: 'f2', studentId: 's2', studentName: 'Priya Patel', rollNumber: 'CS2024002',
     amount: 45000, paid: 22500, due: 22500, dueDate: '2024-08-15',
     status: 'partial', semester: 'Semester 1', feeType: 'Tuition Fee', transactionId: 'TXN2024002',
@@ -505,10 +533,10 @@ export const ATTENDANCE_OVERVIEW = [
 ];
 
 export const DEPARTMENT_DISTRIBUTION = [
-  { name: 'Computer Science', value: 145, color: '#6366f1' },
+  { name: 'Computer Science', value: 145, color: '#1a3a6b' },
   { name: 'Electronics', value: 82, color: '#10b981' },
   { name: 'Mechanical', value: 68, color: '#f59e0b' },
-  { name: 'Civil', value: 45, color: '#3b82f6' },
+  { name: 'Civil', value: 45, color: '#1a3a6b' },
   { name: 'Chemical', value: 28, color: '#ef4444' },
 ];
 

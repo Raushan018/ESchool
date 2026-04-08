@@ -26,15 +26,15 @@ export function AnalyticsPage() {
             <AreaChart data={ENROLLMENT_TREND} margin={{ top: 4, right: 4, left: -10, bottom: 0 }}>
               <defs>
                 <linearGradient id="c1" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#1a3a6b" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="#1a3a6b" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-gray-100 dark:text-gray-800" />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip />
-              <Area type="monotone" dataKey="students" stroke="#6366f1" strokeWidth={2} fill="url(#c1)" name="Students" />
+              <Area type="monotone" dataKey="students" stroke="#1a3a6b" strokeWidth={2} fill="url(#c1)" name="Students" />
             </AreaChart>
           </ResponsiveContainer>
         </motion.div>
@@ -49,7 +49,7 @@ export function AnalyticsPage() {
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v / 1000}k`} />
               <Tooltip formatter={(v) => [formatCurrency(Number(v))]} />
               <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#6366f1" strokeWidth={2.5} dot={false} name="Revenue" />
+              <Line type="monotone" dataKey="revenue" stroke="#1a3a6b" strokeWidth={2.5} dot={false} name="Revenue" />
               <Line type="monotone" dataKey="expenses" stroke="#10b981" strokeWidth={2.5} dot={false} name="Expenses" />
             </LineChart>
           </ResponsiveContainer>
@@ -68,7 +68,7 @@ export function AnalyticsPage() {
               <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, 100]} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="avg" name="Average %" fill="#6366f1" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="avg" name="Average %" fill="#1a3a6b" radius={[3, 3, 0, 0]} />
               <Bar dataKey="passing" name="Pass Rate %" fill="#10b981" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

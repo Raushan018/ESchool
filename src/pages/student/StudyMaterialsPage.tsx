@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Play, Link2, File, Download, BookMarked } from 'lucide-react';
-import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
+import { useStudentId } from '../../hooks/useStudentId';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { formatDate } from '../../utils/helpers';
 
@@ -16,16 +16,16 @@ const TYPE_ICONS = {
 const TYPE_COLORS = {
   pdf: 'text-red-500 bg-red-50 dark:bg-red-900/20',
   video: 'text-purple-500 bg-purple-50 dark:bg-purple-900/20',
-  link: 'text-sky-500 bg-sky-50 dark:bg-sky-900/20',
+  link: 'text-brand-600 bg-brand-50 dark:bg-brand-900/20',
   doc: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20',
 };
 
 export function StudyMaterialsPage() {
-  const { user } = useAuthStore();
   const { students, courses } = useDataStore();
+  const studentId = useStudentId();
   const [activeTab, setActiveTab] = useState<string>('all');
 
-  const student = students.find((s) => s.id === user?.id);
+  const student = students.find((s) => s.id === studentId);
   const myCourses = courses.filter((c) => student?.enrolledCourses.includes(c.id));
 
   const allMaterials = myCourses.flatMap((c) =>

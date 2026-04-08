@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowLeft, Clock, Calendar, BookOpen, FileText, Video, Link2, Download, GraduationCap, Award, Play, Pause, Volume2, VolumeX, Maximize, SkipBack, SkipForward, ExternalLink } from 'lucide-react';
 
-function VideoPlayer({ title, description }: { title: string; description?: string }) {
+function VideoPlayer({}: { title: string; description?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
@@ -199,6 +199,7 @@ export function CourseDetailPage() {
   const navigate = useNavigate();
   const { courses } = useDataStore();
   const [activeMaterialId, setActiveMaterialId] = useState<string | null>(null);
+  const [materialTab, setMaterialTab] = useState<'live' | 'recorded'>('recorded');
 
   const course = courses.find((c) => c.id === courseId);
 
@@ -206,7 +207,7 @@ export function CourseDetailPage() {
     <div className="flex flex-col items-center justify-center h-64 gap-3">
       <BookOpen className="w-12 h-12 text-gray-300" />
       <p className="text-gray-400">Course not found.</p>
-      <button onClick={() => navigate('/student/courses')} className="btn-primary text-sm px-4 py-2">Back to Courses</button>
+      <button onClick={() => navigate('/student/courses')} className="bg-brand-600 hover:bg-white hover:border-brand-600 text-white hover:text-brand-600 border border-transparent text-sm px-4 py-2 rounded-lg font-semibold transition-colors">Back to Courses</button>
     </div>
   );
 
@@ -223,7 +224,7 @@ export function CourseDetailPage() {
       {/* Back button */}
       <button
         onClick={() => navigate('/student/courses')}
-        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 transition-colors"
+        className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-brand-600 hover:border-b hover:border-brand-600 transition-colors pb-1"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to My Courses
@@ -261,13 +262,13 @@ export function CourseDetailPage() {
             <div className="flex items-center gap-3 mt-6">
               <a
                 href="/student/materials"
-                className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm"
+                className="px-6 py-2.5 bg-brand-600 text-white text-sm font-semibold rounded-xl border border-transparent hover:bg-white hover:text-brand-600 hover:border-brand-600 transition-colors shadow-sm"
               >
                 Study Materials
               </a>
               <a
                 href="/student/tests"
-                className="px-6 py-2.5 border border-brand-300 text-brand-600 hover:bg-brand-50 text-sm font-semibold rounded-xl transition-colors"
+                className="px-6 py-2.5 border border-brand-300 text-brand-600 text-sm font-semibold rounded-xl hover:bg-white hover:border-brand-600 hover:text-brand-600 transition-colors"
               >
                 Take a Test
               </a>
@@ -308,7 +309,8 @@ export function CourseDetailPage() {
 
       {/* ── Study Materials ── */}
       {course.materials.length > 0 && (() => {
-        const active = course.materials.find((m) => m.id === activeMaterialId) ?? course.materials[0];
+        const filteredMaterials = course.materials.filter((m) => (m.category ?? 'recorded') === materialTab);
+        const active = filteredMaterials.find((m) => m.id === activeMaterialId) ?? filteredMaterials[0];
         return (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -316,18 +318,33 @@ export function CourseDetailPage() {
             transition={{ delay: 0.25 }}
             className="card overflow-hidden"
           >
-            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Study Materials</h3>
-              <span className="text-xs text-gray-400">{course.materials.length} file{course.materials.length !== 1 ? 's' : ''}</span>
+            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Study Materials</h3>
+                <span className="text-xs text-gray-400">{filteredMaterials.length} file{filteredMaterials.length !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 mt-2 w-fit">
+                {(['live', 'recorded'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => { setMaterialTab(tab); setActiveMaterialId(null); }}
+                    className={`px-3 py-1 text-xs font-medium rounded-md transition-colors capitalize border ${materialTab === tab ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm border-brand-600' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 border-transparent hover:border-brand-600'}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="flex flex-col lg:flex-row">
               {/* Left — compact list (50% smaller) */}
               <div className="lg:w-2/5 divide-y divide-gray-50 dark:divide-gray-800/50 border-r border-gray-100 dark:border-gray-800">
-                {course.materials.map((m) => {
+                {filteredMaterials.length === 0 ? (
+                  <p className="px-4 py-8 text-center text-xs text-gray-400">No {materialTab} sessions available</p>
+                ) : filteredMaterials.map((m) => {
                   const Icon = MATERIAL_ICONS[m.type] ?? FileText;
                   const colorClass = MATERIAL_COLORS[m.type] ?? MATERIAL_COLORS.doc;
-                  const isActive = m.id === (activeMaterialId ?? course.materials[0].id);
+                  const isActive = m.id === (activeMaterialId ?? filteredMaterials[0].id);
                   return (
                     <button
                       key={m.id}
@@ -349,7 +366,9 @@ export function CourseDetailPage() {
 
               {/* Right — player / viewer */}
               <div className="flex-1 p-4 flex flex-col items-center justify-center min-h-[220px] bg-gray-50 dark:bg-gray-900/40">
-                {active.type === 'video' ? (
+                {!active ? (
+                  <p className="text-xs text-gray-400">No content to preview</p>
+                ) : active.type === 'video' ? (
                   <div className="w-full">
                     <VideoPlayer title={active.title} description={active.description} />
                     <p className="text-xs text-gray-400 mt-2 text-center">{active.description}</p>

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useDataStore } from '../../store/dataStore';
+import { useStudentId } from '../../hooks/useStudentId';
 import { StatusBadge } from '../../components/ui/Badge';
 import type { Exam, ExamQuestion } from '../../types';
 
@@ -135,10 +136,10 @@ function InstructionsScreen({ exam, studentName, onBegin, onBack }: {
           </div>
 
           <div className="flex gap-3">
-            <button onClick={onBack} className="flex-1 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-semibold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+            <button onClick={onBack} className="flex-1 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-semibold text-sm hover:bg-white hover:border-brand-600 hover:text-brand-600 transition-colors">
               ← Go Back
             </button>
-            <button onClick={onBegin} className="flex-[2] py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm">
+            <button onClick={onBegin} className="flex-[2] py-3 rounded-xl bg-brand-600 text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-white hover:text-brand-600 hover:border-brand-600 border border-transparent transition-colors shadow-sm">
               <Play className="w-4 h-4 fill-current" /> Start Exam
             </button>
           </div>
@@ -175,7 +176,7 @@ function TestInterface({ session, onAnswer, onNavigate, onSubmit }: {
           </div>
         </div>
         <Timer seconds={session.timeLeft} />
-        <button onClick={onSubmit} className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors">
+        <button onClick={onSubmit} className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-white hover:text-emerald-600 hover:border-emerald-600 border border-transparent transition-colors">
           Submit
         </button>
       </div>
@@ -218,7 +219,7 @@ function TestInterface({ session, onAnswer, onNavigate, onSubmit }: {
 
           <div className="flex items-center justify-between">
             <button onClick={() => onNavigate(session.currentQ - 1)} disabled={session.currentQ === 0}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-sm font-medium hover:bg-white hover:border-brand-600 hover:text-brand-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
               <ChevronLeft className="w-4 h-4" /> Previous
             </button>
             {session.currentQ < qs.length - 1 ? (
@@ -325,10 +326,10 @@ function ResultScreen({ session, onBack, onReview }: { session: TestSession; onB
             </div>
           </div>
           <div className="flex gap-3">
-            <button onClick={onReview} className="flex-1 py-2.5 rounded-xl border-2 border-brand-200 dark:border-brand-700 text-brand-600 dark:text-brand-400 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-brand-50 transition-colors">
+            <button onClick={onReview} className="flex-1 py-2.5 rounded-xl border-2 border-brand-200 dark:border-brand-700 text-brand-600 dark:text-brand-400 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-white hover:border-brand-600 transition-colors">
               <Eye className="w-4 h-4" /> Review Answers
             </button>
-            <button onClick={onBack} className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors">
+            <button onClick={onBack} className="flex-1 py-2.5 rounded-xl bg-brand-600 text-white font-semibold text-sm hover:bg-white hover:text-brand-600 hover:border-brand-600 border border-transparent transition-colors">
               Back to Exams
             </button>
           </div>
@@ -344,8 +345,8 @@ function ReviewScreen({ session, onBack }: { session: TestSession; onBack: () =>
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto space-y-4">
       <div className="flex items-center gap-3">
-        <button onClick={onBack} className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-          <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+        <button onClick={onBack} className="p-2 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-white hover:border-brand-600 transition-colors">
+          <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400 hover:text-brand-600" />
         </button>
         <div>
           <h2 className="font-bold text-gray-900 dark:text-white">Answer Review</h2>
@@ -383,7 +384,7 @@ function ReviewScreen({ session, onBack }: { session: TestSession; onBack: () =>
           </motion.div>
         );
       })}
-      <button onClick={onBack} className="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-colors">
+      <button onClick={onBack} className="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold text-sm hover:bg-white hover:text-brand-600 hover:border-brand-600 border border-transparent transition-colors">
         ← Back to Results
       </button>
     </motion.div>
@@ -392,7 +393,7 @@ function ReviewScreen({ session, onBack }: { session: TestSession; onBack: () =>
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export function OnlineTestsPage() {
-  const { user } = useAuthStore();
+  useAuthStore();
   const { students, courses, exams, results } = useDataStore();
   const [view, setView] = useState<View>('list');
   const [pendingExam, setPendingExam] = useState<Exam | null>(null);
@@ -400,7 +401,8 @@ export function OnlineTestsPage() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [spinning, setSpinning] = useState(false);
 
-  const student = students.find((s) => s.id === user?.id);
+  const studentId = useStudentId();
+  const student = students.find((s) => s.id === studentId);
   const myCourses = courses.filter((c) => student?.enrolledCourses.includes(c.id));
   const availableExams = exams.filter((e) =>
     e.status === 'ongoing' &&
@@ -499,7 +501,7 @@ export function OnlineTestsPage() {
             <h2 className="text-sm font-bold text-gray-900 dark:text-white">Subjects Available For Examination Now</h2>
           </div>
           <button onClick={handleRefresh}
-            className="p-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white transition-colors">
+            className="p-2 rounded-lg bg-brand-600 text-white hover:bg-white hover:text-brand-600 hover:border-brand-600 border border-transparent transition-colors">
             <RefreshCw className={`w-4 h-4 transition-transform duration-500 ${spinning ? 'rotate-180' : ''}`} />
           </button>
         </div>
@@ -546,7 +548,7 @@ export function OnlineTestsPage() {
 
                 {/* CTA */}
                 <button onClick={() => handleStart(exam)}
-                  className="flex-shrink-0 px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold flex items-center gap-2 transition-colors shadow-sm group-hover:shadow-md">
+                  className="flex-shrink-0 px-6 py-3 rounded-xl bg-brand-600 text-white text-sm font-bold flex items-center gap-2 hover:bg-white hover:text-brand-600 hover:border-brand-600 border border-transparent transition-colors shadow-sm group-hover:shadow-md">
                   <Play className="w-4 h-4 fill-current" /> Start Exam
                 </button>
               </motion.div>
@@ -566,7 +568,7 @@ export function OnlineTestsPage() {
         </div>
         <div className="divide-y divide-gray-50 dark:divide-gray-800/50">
           {allExams.map((exam, i) => {
-            const myResult = results.find((r) => r.examId === exam.id && r.studentId === user?.id);
+            const myResult = results.find((r) => r.examId === exam.id && r.studentId === studentId);
             return (
               <motion.div key={exam.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                 className="flex items-center gap-4 px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
