@@ -142,6 +142,7 @@ export function RegisterPage() {
       await api.post('/auth/register', {
         name: name.trim(),
         email: email.trim().toLowerCase(),
+        mobile: mobile.trim(),
         password,
         role: tab,
       });

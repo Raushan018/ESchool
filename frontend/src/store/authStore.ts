@@ -22,7 +22,13 @@ export const useAuthStore = create<AuthState>()(
 
       login: async (email, password) => {
         try {
-          const { data } = await api.post('/auth/login', { email, password });
+          // Determine if input is email or mobile
+          const isEmail = email.includes('@');
+          const payload = isEmail 
+            ? { email, password }
+            : { mobile: email, password };
+
+          const { data } = await api.post('/auth/login', payload);
 
           const user: User = {
             id: data.data._id,

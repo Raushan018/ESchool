@@ -11,7 +11,7 @@ import { AppError } from '../middleware/errorHandler.js';
  */
 const register = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, mobile, password, role } = req.body;
 
     // Prevent creating admin via public API — must be done via seeder or existing admin
     if (role === ROLES.ADMIN) {
@@ -32,7 +32,23 @@ const register = async (req, res, next) => {
         .json(errorResponse('An account with this email already exists.'));
     }
 
-    const user = await User.create({ name, email, password, role: role || ROLES.STUDENT });
+    // Check for duplicate mobile if provided
+    if (mobile) {
+      const mobileExists = await User.findOne({ mobile });
+      if (mobileExists) {
+        return res
+          .status(HTTP.CONFLICT)
+          .json(errorResponse('An account with this mobile number already exists.'));
+      }
+    }
+
+    const user = await User.create({ 
+      name, 
+      email, 
+      mobile: mobile || undefined,
+      password, 
+      role: role || ROLES.STUDENT 
+    });
 
     sendTokenResponse(user, HTTP.CREATED, res, 'Registration successful.');
   } catch (error) {
@@ -43,25 +59,35 @@ const register = async (req, res, next) => {
 /**
  * @route   POST /api/auth/login
  * @access  Public
+ * @desc    Login with email or mobile + password
  */
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, mobile, password } = req.body;
 
-    // Explicitly select password (excluded by default via schema)
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    // Accept either email or mobile
+    let user;
+    if (email) {
+      user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    } else if (mobile) {
+      user = await User.findOne({ mobile }).select('+password');
+    } else {
+      return res
+        .status(HTTP.BAD_REQUEST)
+        .json(errorResponse('Email or mobile number is required.'));
+    }
 
     if (!user || !user.isActive) {
       return res
         .status(HTTP.UNAUTHORIZED)
-        .json(errorResponse('Invalid email or password.'));
+        .json(errorResponse('Invalid credentials.'));
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res
         .status(HTTP.UNAUTHORIZED)
-        .json(errorResponse('Invalid email or password.'));
+        .json(errorResponse('Invalid credentials.'));
     }
 
     // Update lastLogin timestamp

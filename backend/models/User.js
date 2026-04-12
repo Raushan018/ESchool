@@ -19,6 +19,13 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email'],
     },
+    mobile: {
+      type: String,
+      trim: true,
+      match: [/^\+?\d{10,13}$/, 'Please provide a valid mobile number'],
+      sparse: true, // Allow null but enforce uniqueness on non-null values
+      unique: true,
+    },
     password: {
       type: String,
       required: [true, 'Password is required'],
@@ -47,6 +54,7 @@ const userSchema = new mongoose.Schema(
 
 // ─── Indexes ────────────────────────────────────────────────────────────────
 userSchema.index({ email: 1 });
+userSchema.index({ mobile: 1 });
 userSchema.index({ role: 1 });
 
 // ─── Pre-save hook: hash password only when modified ───────────────────────

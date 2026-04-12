@@ -27,10 +27,24 @@ const app = express();
 app.use(helmet()); // Sets security HTTP headers
 
 // CORS — allow only the frontend origin
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://e-school-psi.vercel.app"
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    credentials: true,            // Allow cookies
+    origin: function (origin, callback) {
+      // allow requests with no origin (like Postman, mobile apps)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })

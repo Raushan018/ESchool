@@ -6,11 +6,6 @@ import logoImg from '../../assets/E-School logo with vibrant colors.png';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 
-const DEMO = {
-  student: { email: 'amit@student.com',  password: 'Student@1234' },
-  admin:   { email: 'admin@eschool.com', password: 'Admin@1234'   },
-};
-
 // ─── Decorative SVG illustration ──────────────────────────────────────────────
 function SchoolIllustration() {
   return (
@@ -106,8 +101,8 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   const [tab,      setTab]      = useState<'student' | 'admin'>('student');
-  const [email,    setEmail]    = useState(DEMO.student.email);
-  const [password, setPassword] = useState(DEMO.student.password);
+  const [email,    setEmail]    = useState('');
+  const [password, setPassword] = useState('');
   const [showPw,   setShowPw]   = useState(false);
   const [error,    setError]    = useState('');
   const [loading,  setLoading]  = useState(false);
@@ -123,11 +118,11 @@ export function LoginPage() {
     }
   }, [isAuthenticated, user, navigate]);
 
-  // Switch tab → pre-fill demo credentials
+  // Switch tab → clear fields
   const handleTabSwitch = (t: 'student' | 'admin') => {
     setTab(t);
-    setEmail(DEMO[t].email);
-    setPassword(DEMO[t].password);
+    setEmail('');
+    setPassword('');
     setError('');
   };
 
@@ -283,11 +278,6 @@ export function LoginPage() {
                   ) : 'Log in'}
                 </button>
               </form>
-
-              {/* Demo hint */}
-              <p className="mt-4 text-center text-xs text-gray-400">
-                Demo credentials pre-filled · just click <span className="font-semibold">Log in</span>
-              </p>
 
               <p className="mt-3 text-center text-xs text-gray-400">
                 Don't have an account?{' '}
