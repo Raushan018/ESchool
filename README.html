@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduManage - Institute ERP + LMS System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1A3A6B;
+            --primary-light: #3A7BB0;
+            --primary-lighter: #87ADD0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --border-color: #e5e7eb;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(26, 58, 107, 0.2);
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+
+        header .meta {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            font-size: 0.9em;
+            backdrop-filter: blur(10px);
+        }
+
+        .toc {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--primary-light);
+        }
+
+        .toc h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc ol {
+            list-style-position: inside;
+            line-height: 2;
+            columns: 2;
+        }
+
+        .toc a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        section {
+            background: white;
+            padding: 35px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            scroll-margin-top: 80px;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-light);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: var(--primary-light);
+            font-size: 1.4em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--text-dark);
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-gray);
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: var(--text-gray);
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+            font-size: 0.95em;
+        }
+
+        .code-block {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border-left: 4px solid var(--primary-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        tr:hover {
+            background: #f0f3f8;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .feature-list li {
+            padding: 12px;
+            margin: 10px 0;
+            background: var(--bg-light);
+            border-left: 4px solid var(--primary-light);
+            border-radius: 4px;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #0c5460;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #856404;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #155724;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #155724;
+        }
+
+        .structure-box {
+            background: #f0f3f8;
+            border: 2px solid var(--primary-lighter);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .structure-box code {
+            background: transparent;
+            color: var(--primary);
+            padding: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-light);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(58, 123, 176, 0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .print-btn:hover {
+            background: var(--primary);
+            box-shadow: 0 6px 16px rgba(26, 58, 107, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .print-btn {
+                position: static;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .toc ol {
+                columns: 1;
+            }
+
+            section {
+                padding: 20px;
+            }
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+
+            section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid var(--border-color);
+            }
+
+            .code-block {
+                page-break-inside: avoid;
+            }
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .grid-item {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .badge-success {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .badge-danger {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .quote {
+            border-left: 4px solid var(--primary-light);
+            padding: 15px 20px;
+            margin: 20px 0;
+            background: #f0f3f8;
+            font-style: italic;
+            color: var(--text-gray);
+        }
+
+        .back-to-top {
+            display: block;
+            text-align: center;
+            margin: 40px 0;
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-to-top:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">📄 Print to PDF</button>
+
+    <div class="container">
+        <header>
+            <h1>🎓 EduManage</h1>
+            <p class="subtitle">Advanced Institute ERP + LMS System</p>
+            <p style="opacity: 0.9;">A production-level, SaaS-style web application for complete institute management and online learning</p>
+            <div class="meta">
+                <span class="badge">✅ Production Ready</span>
+                <span class="badge">⚛️ React 19 + TypeScript</span>
+                <span class="badge">🎨 Tailwind CSS v3</span>
+                <span class="badge">📊 Full-Featured</span>
+            </div>
+        </header>
+
+        <div class="toc">
+            <h2>📚 Table of Contents</h2>
+            <ol>
+                <li><a href="#overview">Project Overview</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#architecture">System Architecture</a></li>
+                <li><a href="#tech-stack">Tech Stack</a></li>
+                <li><a href="#auth">Authentication Flow</a></li>
+                <li><a href="#database">Database Design</a></li>
+                <li><a href="#flow">Application Flow</a></li>
+                <li><a href="#ui">UI/UX Decisions</a></li>
+                <li><a href="#highlights">Key Highlights</a></li>
+                <li><a href="#improvements">Future Improvements</a></li>
+                <li><a href="#setup">Setup & Running</a></li>
+                <li><a href="#interview">Interview Guide</a></li>
+            </ol>
+        </div>
+
+        <!-- SECTION 1 -->
+        <section id="overview">
+            <h2>📌 Project Overview</h2>
+            <p><strong>EduManage</strong> is a full-featured Institute ERP (Enterprise Resource Planning) combined with an LMS (Learning Management System) built for a single educational organization. It consolidates all administrative and academic operations into one modern, responsive platform.</p>
+
+            <h3>What Problem Does It Solve?</h3>
+            <p>Traditional institutes rely on disconnected spreadsheets, paper-based records, and separate tools for admissions, attendance, fees, exams, and learning materials. EduManage replaces all of that with:</p>
+
+            <ul class="feature-list">
+                <li><strong>Single sign-on platform</strong> for admins and students</li>
+                <li><strong>Real-time dashboards</strong> with data visualization</li>
+                <li><strong>Online exam engine</strong> with auto-grading</li>
+                <li><strong>Fee management</strong> with payment tracking</li>
+                <li><strong>Course and study material</strong> delivery</li>
+                <li><strong>Attendance monitoring</strong> with below-75% alerts</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section id="features">
+            <h2>🚀 Features</h2>
+
+            <h3>Admin Features</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dashboard</strong></td>
+                        <td>Live stats, enrollment trends, revenue charts, department distribution, recent activity</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Student Management</strong></td>
+                        <td>Full CRUD — add, edit, delete, search, filter by dept/batch/status</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Teacher Management</strong></td>
+                        <td>Faculty profiles with subjects, salary, qualification, card-based UI</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Course Management</strong></td>
+                        <td>Create/edit courses with instructor, schedule, capacity tracking</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Attendance</strong></td>
+                        <td>Visual attendance tracking per student and course, charts, below-75% alerts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fee Management</strong></td>
+                        <td>Per-student fee records, mark-as-paid, transaction IDs, collection rate KPI</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Exams & Results</strong></td>
+                        <td>Exam scheduling, MCQ question bank, result publishing, grade analytics</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analytics</strong></td>
+                        <td>Multi-chart deep dive — enrollment growth, revenue trends, performance heatmaps</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Student Features</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Module</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dashboard</strong></td>
+                        <td>Personalized welcome, course summary, performance radar chart, upcoming exams</td>
+                    </tr>
+                    <tr>
+                        <td><strong>My Courses</strong></td>
+                        <td>Enrolled course cards with schedule, teacher, capacity, materials count</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Study Materials</strong></td>
+                        <td>Per-course material browser — PDF, video, link, doc with download buttons</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Online Tests</strong></td>
+                        <td>Timed MCQ exam with live countdown, question navigator, auto-submit, instant result</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Results</strong></td>
+                        <td>Grade history with bar chart, grade badge, pass/fail status per exam</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Attendance</strong></td>
+                        <td>Per-course attendance breakdown with progress bars, below-75% warning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fee Status</strong></td>
+                        <td>Payment summary, outstanding dues, transaction history with Pay Now CTA</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 3 -->
+        <section id="architecture">
+            <h2>🧠 System Architecture</h2>
+
+            <h3>Frontend Structure</h3>
+            <div class="structure-box">
+src/
+├── components/
+│   ├── ui/             # Reusable atoms: Avatar, Badge, Modal, ProgressBar, Skeleton
+│   └── shared/         # Layout components: Sidebar, Topbar, AuthGuard
+├── pages/
+│   ├── admin/          # 8 admin pages
+│   ├── student/        # 7 student pages
+│   └── auth/           # Login & Register pages
+├── layouts/
+│   ├── AdminLayout.tsx # Sidebar + Topbar + animated Outlet
+│   └── StudentLayout.tsx
+├── store/              # Global state (Zustand)
+│   ├── authStore.ts
+│   ├── uiStore.ts
+│   └── dataStore.ts
+├── data/               # Mock data
+├── types/              # TypeScript interfaces
+└── utils/              # Helper functions
+            </div>
+
+            <h3>State Management Architecture</h3>
+            <p><strong>Zustand</strong> is used for all global state:</p>
+            <ul class="feature-list">
+                <li><code>authStore</code> — user session, login/logout, persisted in localStorage</li>
+                <li><code>uiStore</code> — sidebar collapse state, dark/light theme preference</li>
+                <li><code>dataStore</code> — all entity CRUD state (students, teachers, courses, etc.)</li>
+            </ul>
+
+            <h3>Why Zustand over Redux?</h3>
+            <p>Zustand has zero boilerplate, uses hooks natively, integrates persist middleware trivially, and is sufficient for single-organization apps without complex middleware chains.</p>
+
+            <h3>Component Design Principles</h3>
+            <ul class="feature-list">
+                <li><strong>Atomic design pattern</strong> — small reusable UI atoms composed into feature pages</li>
+                <li><strong>No prop drilling</strong> — all shared data accessed via Zustand hooks</li>
+                <li><strong>Controlled forms</strong> — all modals use local state, dispatching to store on submit</li>
+                <li><strong>Separation of concerns</strong> — data logic in store, presentation in components</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 4 -->
+        <section id="tech-stack">
+            <h2>⚙️ Tech Stack</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Technology</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>React 19 + TypeScript</strong></td>
+                        <td>Component-based UI with full type safety</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vite</strong></td>
+                        <td>Sub-second HMR, faster than CRA, tree-shaking, minimal config</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tailwind CSS v3</strong></td>
+                        <td>Utility-first styling, dark mode via <code>class</code> strategy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>React Router v7</strong></td>
+                        <td>Nested routes, layout-level auth guards</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zustand</strong></td>
+                        <td>Minimal global state with built-in persistence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Framer Motion</strong></td>
+                        <td>Production-grade animations — page transitions, modal springs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Recharts</strong></td>
+                        <td>Composable charts — area, bar, pie, radar, line</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Lucide React</strong></td>
+                        <td>Consistent, tree-shakeable icon set</td>
+                    </tr>
+                    <tr>
+                        <td><strong>clsx + tailwind-merge</strong></td>
+                        <td>Safe conditional class composition</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 5 -->
+        <section id="auth">
+            <h2>🔐 Authentication Flow</h2>
+
+            <h3>Login Process</h3>
+            <ol>
+                <li>User visits <code>/</code> — redirected to <code>/login</code> if not authenticated</li>
+                <li>User submits email + password to <code>authStore.login()</code></li>
+                <li><code>login()</code> simulates an async API call (800ms delay)</li>
+                <li>On success: user object stored in Zustand + <code>localStorage</code></li>
+                <li>User redirected to <code>/admin</code> or <code>/student</code> based on <code>user.role</code></li>
+            </ol>
+
+            <h3>Route Protection</h3>
+            <div class="quote">
+                AuthGuard checks authentication on every protected route. If not authenticated → redirect to /login. If wrong role → redirect to own dashboard.
+            </div>
+
+            <h3>Demo Credentials</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Admin</strong></td>
+                        <td><code>admin@institute.edu</code></td>
+                        <td><code>admin123</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Student</strong></td>
+                        <td><code>arjun.sharma@student.edu</code></td>
+                        <td><code>student123</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 6 -->
+        <section id="database">
+            <h2>🗄️ Database Design (Conceptual)</h2>
+
+            <div class="info-box">
+                Frontend-only with mock data. The following describes the conceptual schema for backend implementation.
+            </div>
+
+            <h3>Core Models</h3>
+            <div class="code-block">
+Student     { id, rollNumber, name, email, phone, department, batch, enrolledCourses[], status }
+Teacher     { id, employeeId, name, email, department, subjects[], qualification, salary }
+Course      { id, code, name, teacherId, department, credits, enrolledCount, materials[] }
+CourseMaterial { id, title, type(pdf|video|link|doc), url, size }
+AttendanceRecord { id, studentId, courseId, date, status(present|absent|late) }
+FeeRecord   { id, studentId, amount, paid, due, status, semester }
+Exam        { id, title, courseId, type, date, duration, questions[] }
+ExamResult  { id, examId, studentId, marksObtained, percentage, grade, status }
+            </div>
+
+            <h3>Relationships</h3>
+            <ul class="feature-list">
+                <li>Student ↔ Course: many-to-many</li>
+                <li>Course → Teacher: many-to-one</li>
+                <li>AttendanceRecord → Student + Course: many-to-one each</li>
+                <li>ExamResult → Exam + Student: many-to-one each</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 7 -->
+        <section id="flow">
+            <h2>🔄 Application Flow</h2>
+
+            <h3>Admin Flow</h3>
+            <p>Login → Dashboard (charts + stats) → Students (CRUD) → Teachers (cards + CRUD) → Courses (capacity tracking) → Attendance (charts) → Fees (mark paid) → Exams (schedule + results + analytics) → Analytics (multi-chart)</p>
+
+            <h3>Student Flow</h3>
+            <p>Login → Dashboard (personalized KPIs + radar chart) → Courses (enrolled courses) → Materials (download resources) → Tests (timed MCQ → auto-grade → result screen) → Results (grade history) → Attendance (per-course %) → Fees (dues + Pay Now)</p>
+        </section>
+
+        <!-- SECTION 8 -->
+        <section id="ui">
+            <h2>🎨 UI/UX Decisions</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Decision</th>
+                        <th>Reasoning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dark/Light mode</strong></td>
+                        <td>Tailwind <code>class</code> strategy + Zustand persist — no flicker</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Collapsible sidebar</strong></td>
+                        <td>240px expanded / 64px icon-only — preserves screen real estate</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Card-based teachers</strong></td>
+                        <td>More scannable than tables for rich entity data</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tables for students</strong></td>
+                        <td>Dense row data is faster to scan in table form</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Framer Motion transitions</strong></td>
+                        <td>Subtle <code>y: 8 → 0</code> fade prevents jarring page changes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Modal forms</strong></td>
+                        <td>Keeps user in context, spring animation feels natural</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Progress bars</strong></td>
+                        <td>Visual encoding faster than raw numbers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Radar chart</strong></td>
+                        <td>Shows multi-subject balance at a glance</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Color System</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Color</th>
+                        <th>Usage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Primary (Indigo 600)</strong></td>
+                        <td>Brand identity, primary CTAs</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Success (Emerald 500)</strong></td>
+                        <td>Present, paid, pass</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Warning (Amber 500)</strong></td>
+                        <td>Late, partial, upcoming</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Danger (Red 500)</strong></td>
+                        <td>Absent, overdue, fail</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- SECTION 9 -->
+        <section id="highlights">
+            <h2>📊 Key Highlights</h2>
+
+            <ul class="feature-list">
+                <li><strong>Role-based access control</strong> — admin and student see completely different UIs</li>
+                <li><strong>Persistent state</strong> — login and theme survive page refresh via localStorage</li>
+                <li><strong>Online exam engine</strong> — timer, question navigator, auto-submit, instant grading</li>
+                <li><strong>8+ chart types</strong> — area, bar, line, pie, radar, stacked bar with Recharts</li>
+                <li><strong>Full CRUD flows</strong> — every entity with form validation and confirm dialogs</li>
+                <li><strong>Responsive design</strong> — mobile sidebar with overlay, works on all screen sizes</li>
+                <li><strong>Complete dark mode</strong> — proper contrast ratios across all components</li>
+                <li><strong>Professional typography</strong> — consistent sizing scale and line heights</li>
+                <li><strong>Notification system</strong> — dropdown with unread indicator and mark-as-read</li>
+                <li><strong>TypeScript strict mode</strong> — end-to-end type safety</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 10 -->
+        <section id="improvements">
+            <h2>🧪 Future Improvements</h2>
+
+            <ul class="feature-list">
+                <li><strong>Backend integration</strong> — Node.js/Express API + MongoDB/PostgreSQL</li>
+                <li><strong>Real authentication</strong> — JWT tokens, refresh tokens, OAuth (Google login)</li>
+                <li><strong>File uploads</strong> — Upload PDFs/videos to S3/Cloudinary</li>
+                <li><strong>Email notifications</strong> — Fee reminders and exam notifications via SendGrid</li>
+                <li><strong>Live attendance marking</strong> — Teacher interface for real-time marking</li>
+                <li><strong>Assignment submission</strong> — Student uploads with teacher grading workflow</li>
+                <li><strong>Parent portal</strong> — Read-only view for guardians</li>
+                <li><strong>Multi-tenant SaaS</strong> — Support multiple institutes on one platform</li>
+                <li><strong>AI analytics</strong> — Predict dropout risk from attendance + fee patterns</li>
+            </ul>
+        </section>
+
+        <!-- SECTION 11 -->
+        <section id="setup">
+            <h2>🛠️ Setup & Running</h2>
+
+            <h3>Prerequisites</h3>
+            <ul class="feature-list">
+                <li><strong>Node.js</strong> v18+ (<a href="https://nodejs.org/" target="_blank">Download</a>)</li>
+                <li><strong>npm</strong> or <strong>yarn</strong> package manager</li>
+                <li>Modern web browser (Chrome, Firefox, Safari, Edge)</li>
+            </ul>
+
+            <h3>Installation & Development</h3>
+            <div class="code-block">
+# Navigate to frontend directory
+cd frontend
+
+# Install all dependencies
+npm install
+
+# Start development server with hot reload
+npm run dev
+# Server runs on: http://localhost:5173
+
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
+
+# Run ESLint to check code quality
+npm lint
+            </div>
+
+            <h3>Browser Support</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Browser</th>
+                        <th>Support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chrome</td>
+                        <td><span class="badge-success">✅ Latest 2 versions</span></td>
+                    </tr>
+                    <tr>
+                        <td>Firefox</td>
+                        <td><span class="badge-success">✅ Latest 2 versions</span></td>
+                    </tr>
+                    <tr>
+                        <td>Safari</td>
+                        <td><span class="badge-success">✅ Latest 2 versions</span></td>
+                    </tr>
+                    <tr>
+                        <td>Edge</td>
+                        <td><span class="badge-success">✅ Latest 2 versions</span></td>
+                    </tr>
+                    <tr>
+                        <td>IE 11</td>
+                        <td><span class="badge-danger">❌ Not supported</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Backend Integration</h3>
+            <p>The frontend is designed to work with a Node.js/Express backend. To connect:</p>
+            <ol>
+                <li>Update API Base URL in <code>src/lib/api.ts</code></li>
+                <li>Set environment variable: <code>VITE_API_BASE_URL=https://your-api-domain.com/api</code></li>
+                <li>Expected backend uses MongoDB, JWT authentication, and Express.js</li>
+            </ol>
+        </section>
+
+        <!-- SECTION 12 -->
+        <section id="interview">
+            <h2>💬 Interview Explanation Guide</h2>
+
+            <h3>30-Second Pitch</h3>
+            <div class="quote">
+                I built a full-stack styled Institute ERP + LMS in React and TypeScript. It has two portals — admin and student. Admin manages students, teachers, courses, attendance, fees, and exams with full CRUD. Students can view courses, download study materials, take timed MCQ tests with instant auto-grading, and track results and attendance. I used Zustand for state, Tailwind for styling, Framer Motion for animations, and Recharts for dashboards.
+            </div>
+
+            <h3>2–3 Minute Explanation</h3>
+            <div class="quote">
+                EduManage is a production-level SaaS web app simulating a complete institute management system. It solves the problem of disconnected spreadsheets by providing a single platform for all institute operations.
+
+                Architecturally, I used React 18 with TypeScript and Vite. Two distinct user roles — admin and student — each have protected layouts enforced by a custom AuthGuard using React Router v6 nested routes.
+
+                For state management, I chose Zustand for its zero-boilerplate approach and built-in localStorage persistence. Three stores handle: auth sessions, UI preferences (theme/sidebar), and all entity CRUD.
+
+                The admin side has 8 modules: a multi-chart dashboard, CRUD for students/teachers/courses, attendance analytics, fee tracking with mark-as-paid, exam management, and deep analytics.
+
+                The student side includes a personalized dashboard with a Recharts Radar performance chart, study materials browser, and an online exam engine with countdown timer, per-question navigation, auto-submit, and instant grading.
+
+                I implemented full dark mode via Tailwind's class strategy, collapsible sidebar, Framer Motion animations, and a complete design system with reusable components.
+            </div>
+
+            <h3>Common Interview Questions</h3>
+
+            <h4>Q: Why Zustand over Redux?</h4>
+            <p><strong>A:</strong> Redux requires boilerplate — actions, reducers, selectors. Context causes re-renders for all consumers. Zustand is hook-based, zero-config, and its persist middleware handles localStorage in 3 lines. Right complexity for this app size.</p>
+
+            <h4>Q: How does authentication work without a backend?</h4>
+            <p><strong>A:</strong> Mock async login with 800ms delay, Zustand + localStorage persistence, AuthGuard HOC wrapping protected routes. The pattern mirrors real JWT-based auth — just swap the mock for an actual API call.</p>
+
+            <h4>Q: How does the exam engine work?</h4>
+            <p><strong>A:</strong> TestSession state holds answers array, current question index, and timeLeft. A useEffect with setInterval decrements timeLeft every second. On timeout or manual submit, each answer is compared to correctAnswer and score is calculated.</p>
+
+            <h4>Q: How is dark mode implemented?</h4>
+            <p><strong>A:</strong> Tailwind class strategy — dark: utilities activate when &lt;html&gt; has the dark class. uiStore persists the preference. App.tsx reads it on mount and adds/removes the class from document.documentElement.</p>
+
+            <h4>Q: What would you add with more time?</h4>
+            <p><strong>A:</strong> Real backend (Node.js + PostgreSQL), JWT auth, S3 file uploads, email notifications (SendGrid), live attendance marking, multi-tenant architecture, and AI-powered dropout prediction.</p>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p><strong>EduManage</strong> — Production-Ready Institute Management System</p>
+            <p>Built with ❤️ using React, TypeScript, and Tailwind CSS</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">Last Updated: April 2026</p>
+        </footer>
+
+        <a href="#" class="back-to-top">↑ Back to Top</a>
+    </div>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

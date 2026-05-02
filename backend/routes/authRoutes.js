@@ -8,7 +8,7 @@ import { ROLES } from '../config/constants.js';
 const router = Router();
 
 router.post('/register', validate(['name', 'email', 'password']), register);
-router.post('/login',    validate(['email', 'password']),          login);
+router.post('/login',    validate(['password']),                    login);
 router.get('/me',        protect,                                   getMe);
 router.post('/logout',   protect,                                   logout);
 

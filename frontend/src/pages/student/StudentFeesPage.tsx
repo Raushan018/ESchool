@@ -203,9 +203,16 @@ export function StudentFeesPage() {
   // Session-paid receipts
   const [paidReceipts, setPaidReceipts] = useState<Record<string, { txnId: string; method: string; html: string; paidOn: string }>>({});
 
-  const studentInfo = student
-    ? { name: student.name, rollNumber: student.rollNumber, department: student.department, batch: student.batch, email: student.email, phone: student.phone, guardianName: student.guardianName, dateOfBirth: student.dateOfBirth }
-    : { name: user?.name ?? '', rollNumber: '—', department: '—', batch: '—', email: user?.email ?? '', phone: '—', guardianName: '—', dateOfBirth: '' };
+  const studentInfo = {
+    name:          user?.name        ?? student?.name        ?? '',
+    email:         user?.email       ?? student?.email       ?? '',
+    rollNumber:    student?.rollNumber  ?? '—',
+    department:    student?.department  ?? '—',
+    batch:         student?.batch       ?? '—',
+    phone:         student?.phone       ?? '—',
+    guardianName:  student?.guardianName ?? '—',
+    dateOfBirth:   student?.dateOfBirth  ?? '',
+  };
 
   const selectedFees = myFees.filter((f) => selectedSems.includes(f.semester) && f.due > 0);
   const selectedTotal = selectedFees.reduce((a, f) => a + f.due, 0);

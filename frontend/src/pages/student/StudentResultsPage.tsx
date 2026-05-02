@@ -126,12 +126,12 @@ export function StudentResultsPage() {
   const assignmentsDone  = semResults.filter((r) => assignmentExams.some((e) => e.id === r.examId)).length;
 
   const studentInfo = {
-    name:       student?.name ?? user?.name ?? '—',
+    name:       user?.name        ?? student?.name       ?? '—',
+    email:      user?.email       ?? student?.email      ?? '—',
     rollNumber: student?.rollNumber ?? '—',
     department: student?.department ?? '—',
-    batch:      student?.batch ?? '—',
-    email:      student?.email ?? '—',
-    joinDate:   student?.joinDate ?? '—',
+    batch:      student?.batch      ?? '—',
+    joinDate:   student?.joinDate   ?? '—',
   };
 
   const initials = studentInfo.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
