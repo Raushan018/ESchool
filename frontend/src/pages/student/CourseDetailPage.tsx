@@ -220,7 +220,7 @@ export function CourseDetailPage() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 px-20">
       {/* Back button */}
       <button
         onClick={() => navigate('/student/courses')}

@@ -40,7 +40,7 @@ export function StudyMaterialsPage() {
       });
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 px-20">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Study Materials</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{allMaterials.length} resources across your courses</p>

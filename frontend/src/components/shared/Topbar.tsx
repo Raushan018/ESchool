@@ -71,7 +71,7 @@ export function Topbar({ title }: { title?: string }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-80 card shadow-2xl overflow-hidden z-50"
+                className="absolute right-0 top-full mt-2 w-80 card shadow-2xl overflow-hidden z-[100]"
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
                   <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ export function Topbar({ title }: { title?: string }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-52 card shadow-2xl overflow-hidden z-50"
+                className="absolute right-0 top-full mt-2 w-52 card shadow-2xl overflow-hidden z-[100]"
               >
                 <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">{user?.name}</p>
@@ -157,7 +157,7 @@ export function Topbar({ title }: { title?: string }) {
 
       {/* Click outside to close */}
       {(notifOpen || profileOpen) && (
-        <div className="fixed inset-0 z-40" onClick={() => { setNotifOpen(false); setProfileOpen(false); }} />
+        <div className="fixed inset-0 z-50" onClick={() => { setNotifOpen(false); setProfileOpen(false); }} />
       )}
     </header>
   );

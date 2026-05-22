@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Lock, Bell, Moon, LogOut, ArrowLeft } from 'lucide-react';
@@ -22,26 +22,48 @@ export function SettingsPage() {
     confirmPassword: '',
   });
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name) {
-      setMessage({ type: 'error', text: 'Name is required.' });
-      return;
+    
+    const formDataToSubmit = new FormData();
+    formDataToSubmit.append('name', formData.name);
+    formDataToSubmit.append('email', formData.email);
+    if (avatarFile) {
+      formDataToSubmit.append('avatar', avatarFile);
     }
-    const result = await updateUser({ name: formData.name, email: formData.email });
+
+    const result = await updateUser(formDataToSubmit);
     if (result.success) {
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
+      setAvatarPreview(null);
+      setAvatarFile(null);
     } else {
       setMessage({ type: 'error', text: result.error ?? 'Update failed.' });
     }
     setTimeout(() => setMessage(null), 3000);
   };
+
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,13 +174,39 @@ export function SettingsPage() {
               >
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Basic Information</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Update your personal details</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Update your personal details and profile picture</p>
 
-                  <div className="mb-6 p-4 bg-brand-50 dark:bg-brand-900/20 rounded-lg border border-brand-200 dark:border-brand-900/40">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Current User</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{user?.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 capitalize">{user?.role}</p>
+                  <div className="flex items-center gap-6 mb-6">
+                    <div className="relative">
+                      <img
+                        src={avatarPreview || user?.avatar || `https://ui-avatars.com/api/?name=${user?.name}&background=0D8ABC&color=fff`}
+                        alt="Avatar"
+                        className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-md"
+                      />
+                      <button 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute bottom-0 right-0 bg-brand-600 text-white p-1.5 rounded-full hover:bg-brand-700 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                      </button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">{user?.name}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
+                      
+                        <button onClick={() => fileInputRef.current?.click()} className="mt-2 text-xs font-semibold text-brand-600 hover:underline">
+                          Change Picture
+                        </button>
+                    </div>
                   </div>
+
 
                   <form onSubmit={handleUpdateProfile} className="space-y-4">
                     <div>

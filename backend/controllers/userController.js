@@ -5,15 +5,16 @@ import { HTTP } from '../config/constants.js';
 /**
  * @route   PUT /api/user/profile
  * @access  Private
- * @desc    Update logged-in user's name and email
+ * @desc    Update logged-in user's profile (name, email, avatar)
  */
 export const updateProfile = async (req, res, next) => {
   try {
     const { name, email } = req.body;
 
-    if (!name && !email) {
-      return res.status(HTTP.BAD_REQUEST).json(errorResponse('Provide name or email to update.'));
-    }
+    const updates = {};
+    if (name) updates.name = name.trim();
+    if (email) updates.email = email.toLowerCase().trim();
+    if (req.file) updates.avatar = req.file.path;
 
     // Check email uniqueness if changing it
     if (email && email !== req.user.email) {
@@ -22,10 +23,6 @@ export const updateProfile = async (req, res, next) => {
         return res.status(HTTP.CONFLICT).json(errorResponse('Email is already in use.'));
       }
     }
-
-    const updates = {};
-    if (name)  updates.name  = name.trim();
-    if (email) updates.email = email.toLowerCase().trim();
 
     const user = await User.findByIdAndUpdate(
       req.user._id,

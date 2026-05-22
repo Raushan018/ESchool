@@ -96,7 +96,7 @@ export function StudentAttendancePage() {
   const isDailyView = !!selectedDate;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 px-20">
 
       {/* ── Page Header ── */}
       <div>

@@ -137,7 +137,9 @@ export function StudentResultsPage() {
   const initials = studentInfo.name.split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 px-20">
+      
+  
 
       {/* ── Page Title ── */}
       <div>

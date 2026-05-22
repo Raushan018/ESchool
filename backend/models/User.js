@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema(
       enum: Object.values(ROLES),
       default: ROLES.STUDENT,
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
     isActive: {
       type: Boolean,
       default: true,

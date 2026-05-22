@@ -445,7 +445,7 @@ export function StudentFeesPage() {
                   </h3>
 
                   {(payMethod === 'credit' || payMethod === 'debit') && (
-                    <div className="space-y-5 max-w-md">
+                    <div className="space-y-5 px-20">
                       <div>
                         <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">
                           {payMethod === 'credit' ? 'Credit' : 'Debit'} Card Name

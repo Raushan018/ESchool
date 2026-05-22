@@ -8,7 +8,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  updateUser: (data: { name?: string; email?: string }) => Promise<{ success: boolean; error?: string }>;
+  updateUser: (data: FormData) => Promise<{ success: boolean; error?: string }>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 }
@@ -33,7 +33,7 @@ export const useAuthStore = create<AuthState>()(
           const user: User = {
             id: data.data._id,
             name: data.data.name,
-            email: data.data.email,
+            email: isEmail ? email : data.data.email, // Use the provided email if it's an email
             role: data.data.role,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(data.data.name)}`,
           };
@@ -50,15 +50,19 @@ export const useAuthStore = create<AuthState>()(
 
       updateUser: async (data) => {
         try {
-          const { data: res } = await api.put('/user/profile', data);
+          const { data: res } = await api.put('/user/profile', data, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
           const updated: User = {
             id: res.data._id,
             name: res.data.name,
             email: res.data.email,
             role: res.data.role,
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(res.data.name)}`,
+            avatar: res.data.avatar,
           };
-          set({ user: updated });
+          set((state) => ({ user: { ...state.user, ...updated } as User }));
           return { success: true };
         } catch (err: unknown) {
           const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message ?? 'Update failed.';

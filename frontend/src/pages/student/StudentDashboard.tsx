@@ -207,8 +207,8 @@ export function StudentDashboard() {
         className="rounded-2xl overflow-hidden relative"
         style={{ background: 'linear-gradient(135deg, #eef0ff 0%, #f3eeff 45%, #fce8f3 100%)' }}
       >
-        <div className="flex items-center justify-between px-12 pt-20 pb-20 gap-6">
-
+        <div className="flex items-center justify-between px-10 pt-20 pb-20 gap-6">
+    
           {/* Left — text content */}
           <div className="flex-1 min-w-0">
             <p className="text-gray-500 text-sm font-medium">{greeting},</p>
@@ -218,10 +218,11 @@ export function StudentDashboard() {
               {typingDone && <span> 👋</span>}
             </h1>
             <p className="text-gray-400 text-sm mt-1.5">
-              {student.batch} · {student.email}
+              {student.batch} · {user?.email}
             </p>
 
             {/* Inline stats */}
+            
             <div className="flex flex-wrap items-center gap-6 mt-6">
               <div>
                 <p className="text-3xl font-bold text-gray-900">{courseCount}</p>
@@ -261,7 +262,7 @@ export function StudentDashboard() {
               <div className="absolute inset-[-16px] rounded-full border-2 border-dashed border-gray-300/40" />
               {/* image circle */}
               <div className="w-40 h-40 rounded-full overflow-hidden ring-4 ring-white shadow-xl z-10">
-                <img src={teacherImg} alt="Teacher" className="w-full h-full object-cover" />
+                <img src={teacherImg} alt="Teacher" className="w-90% h-90% object-cover" />
               </div>
             </div>
 
@@ -277,12 +278,12 @@ export function StudentDashboard() {
 
             {/* Chat bubble — student question (pointing to girl's head) */}
             <div className="absolute top-[0] right-[120px] bg-white rounded-2xl rounded-br-sm shadow-md px-3 py-2 text-xs font-medium text-gray-700 whitespace-nowrap z-30">
-              Sir, what is online school?
+              Sir, what is E-school?
             </div>
 
             {/* Chat bubble — teacher reply (above left circle) */}
             <div className="absolute bottom-[195px] left-[20px] bg-brand-600 rounded-2xl rounded-bl-sm shadow-md px-3 py-2 text-xs font-medium text-white z-30 max-w-[180px] leading-relaxed">
-              Online class is a modern teaching platform 🎓
+              E-School is a modern teaching platform 🎓
             </div>
           </div>
         </div>

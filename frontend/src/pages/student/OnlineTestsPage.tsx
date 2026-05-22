@@ -393,7 +393,7 @@ function ReviewScreen({ session, onBack }: { session: TestSession; onBack: () =>
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export function OnlineTestsPage() {
-  useAuthStore();
+  const { user } = useAuthStore();
   const { students, courses, exams, results } = useDataStore();
   const [view, setView] = useState<View>('list');
   const [pendingExam, setPendingExam] = useState<Exam | null>(null);
@@ -448,7 +448,7 @@ export function OnlineTestsPage() {
 
   // ── Exam List ──────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-5" key={refreshKey}>
+    <div className="space-y-5 px-20" key={refreshKey}>
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -465,7 +465,7 @@ export function OnlineTestsPage() {
         <div className="flex items-center gap-3">
           <CheckCircle className="w-5 h-5 text-emerald-600 flex-shrink-0" />
           <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-            Welcome, <span className="font-bold">{student?.name ?? 'Student'}</span>
+            Welcome, <span className="font-bold">{user?.name ?? 'Student'}</span>
             <span className="font-normal text-emerald-600 dark:text-emerald-400 ml-1">— Good luck with your exams!</span>
           </p>
         </div>

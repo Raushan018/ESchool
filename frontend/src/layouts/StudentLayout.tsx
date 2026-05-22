@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sidebar } from '../components/shared/Sidebar';
 import { Topbar } from '../components/shared/Topbar';
@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 
 export function StudentLayout() {
   const { sidebarOpen, theme } = useUIStore();
+  const location = useLocation();
+  const isDashboard = location.pathname === '/student/dashboard';
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -30,7 +32,7 @@ export function StudentLayout() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
-            className="p-4 lg:p-6"
+            className={isDashboard ? '' : 'p-4 lg:p-6'}
           >
             <Outlet />
           </motion.div>
